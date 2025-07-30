@@ -28,7 +28,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 {
 	if (dev != NULL)
 	{
-		uint8_t t;
+		uint8_t t, reg;
 		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
@@ -50,7 +50,13 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 
 				if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
 						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
-					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				{
+					// verify the written value
+					if ((dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL,
+							&reg, 1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+							&& (reg == t))
+						return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				}
 				break;
 
 			default:
@@ -65,7 +71,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 {
 	if (dev != NULL)
 	{
-		uint8_t t;
+		uint8_t t, reg;
 		if (dev->read(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
@@ -86,7 +92,13 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 
 				if (dev->write(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
 						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
-					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				{
+					// verify the written value
+					if ((dev->read(dev->hInterface, dev->chipAddr, CTRL2_G,
+							&reg, 1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+							&& (reg == t))
+						return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				}
 				break;
 
 			default:
