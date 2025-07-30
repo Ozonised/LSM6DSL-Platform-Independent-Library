@@ -10,6 +10,9 @@
 
 #include <stdint.h>
 
+/*
+ * Register Definiton
+ */
 #define FUNC_CFG_ACCESS           (uint8_t)0x01
 #define SENSOR_SYNC_TIME_FRAME    (uint8_t)0x04
 #define SENSOR_SYNC_RES_RATIO     (uint8_t)0x05
@@ -106,5 +109,342 @@
 #define Z_OFS_USR                 (uint8_t)0x75
 
 #define WHO_AM_I_VAL			  (uint8_t)0x6A
+
+/*
+ *	Register Mask
+ */
+
+// FUNC_CFG_ACCESS
+#define FUNC_CFG_EN (uint8_t)(1 << 7)
+#define FUNC_CFG_EN_B (uint8_t) (1 << 5)
+
+// SENSOR_SYNC_TIME_FRAME
+#define TPH_0 (uint8_t) (1 << 0)
+#define TPH_1 (uint8_t) (1 << 1)
+#define TPH_2 (uint8_t) (1 << 2)
+#define TPH_3 (uint8_t) (1 << 3)
+
+// SENSOR_SYNC_RES_RATIO
+#define RR_0 (uint8_t) (1 << 0)
+#define RR_1 (uint8_t) (1 << 1)
+
+// FIFO_CTRL1
+#define FTH_0 (uint8_t) (1 << 0)
+#define FTH_1 (uint8_t) (1 << 1)
+#define FTH_2 (uint8_t) (1 << 2)
+#define FTH_3 (uint8_t) (1 << 3)
+#define FTH_4 (uint8_t) (1 << 4)
+#define FTH_5 (uint8_t) (1 << 5)
+#define FTH_6 (uint8_t) (1 << 6)
+#define FTH_7 (uint8_t) (1 << 7)
+
+// FIFO_CTRL2
+#define FTH_8 (uint8_t) (1 << 0)
+#define FTH_9 (uint8_t) (1 << 1)
+#define FTH_10 (uint8_t) (1 << 2)
+#define TIMER_PEDO_FIFO_DRDY (uint8_t) (1 << 6)
+#define TIMER_PEDO_FIFO_EN (uint8_t) (1 << 7)
+
+// FIFO_CTRL3
+#define DEC_FIFO_XL0 (uint8_t) (1 << 0)
+#define DEC_FIFO_XL1 (uint8_t) (1 << 1)
+#define DEC_FIFO_XL2 (uint8_t) (1 << 2)
+#define DEC_FIFO_GYRO0 (uint8_t) (1 << 3)
+#define DEC_FIFO_GYRO1 (uint8_t) (1 << 4)
+#define DEC_FIFO_GYRO2 (uint8_t) (1 << 5)
+
+// FIFO_CTRL4
+#define DEC_DS3_FIFO0 (uint8_t) (1 << 0)
+#define DEC_DS3_FIFO1 (uint8_t) (1 << 1)
+#define DEC_DS3_FIFO2 (uint8_t) (1 << 2)
+#define DEC_DS4_FIFO0 (uint8_t) (1 << 3)
+#define DEC_DS4_FIFO1 (uint8_t) (1 << 4)
+#define DEC_DS4_FIFO2 (uint8_t) (1 << 5)
+#define ONLY_HIGH_DATA (uint8_t) (1 << 6)
+#define STOP_ON_FTH (uint8_t) (1 << 7)
+
+// FIFO_CTRL5
+#define FIFO_MODE_0 (uint8_t) (1 << 0)
+#define FIFO_MODE_1 (uint8_t) (1 << 1)
+#define FIFO_MODE_2 (uint8_t) (1 << 2)
+#define ODR_FIFO_0 (uint8_t) (1 << 3)
+#define ODR_FIFO_1 (uint8_t) (1 << 4)
+#define ODR_FIFO_2 (uint8_t) (1 << 5)
+#define ODR_FIFO_3 (uint8_t) (1 << 6)
+
+// DRDY_PULSE_CFG_G
+#define INT2_WRIST_TILT (uint8_t) (1 << 0)
+#define DRDY_PULSED (uint8_t) (1 << 7)
+
+// INT1_CTRL
+#define INT1_DRDY_XL (uint8_t) (1 << 0)
+#define INT1_DRDY_G (uint8_t) (1 << 1)
+#define INT1_BOOT (uint8_t) (1 << 2)
+#define INT1_FTH (uint8_t) (1 << 3)
+#define INT1_FIFO_OVR (uint8_t) (1 << 4)
+#define INT1_FULL_FLAG (uint8_t) (1 << 5)
+#define INT1_SIGN_MOT (uint8_t) (1 << 6)
+#define INT1_STEP_DETECTOR (uint8_t) (1 << 7)
+
+// INT2_CTRL
+#define INT2_DRDY_XL        (uint8_t)(1 << 0)
+#define INT2_DRDY_G         (uint8_t)(1 << 1)
+#define INT2_DRDY_TEMP      (uint8_t)(1 << 2)
+#define INT2_FTH            (uint8_t)(1 << 3)
+#define INT2_FIFO_OVR       (uint8_t)(1 << 4)
+#define INT2_FULL_FLAG      (uint8_t)(1 << 5)
+#define INT2_STEP_COUNT_OV  (uint8_t)(1 << 6)
+#define INT2_STEP_DELTA     (uint8_t)(1 << 7)
+
+// CTRL1_XL
+#define BW0_XL         (uint8_t)(1 << 1)
+#define LPF1_BW_SEL    (uint8_t)(1 << 2)
+#define FS_XL0_Pos 	   (uint8_t) (3)
+#define FS_XL0         (uint8_t)(1 << 3)
+#define FS_XL1         (uint8_t)(1 << 4)
+#define ODR_XL0_Pos    (uint8_t) (5)
+#define ODR_XL0        (uint8_t)(1 << 5)
+#define ODR_XL2        (uint8_t)(1 << 6)
+#define ODR_XL3        (uint8_t)(1 << 7)
+
+// CTRL2_G
+#define FS_G0_Pos   (uint8_t)(2)
+#define FS_G0       (uint8_t)(1 << 2)
+#define FS_G1       (uint8_t)(1 << 1)
+#define ODR_G0_Pos  (uint8_t)(3)
+#define ODR_G0      (uint8_t)(1 << 3)
+#define ODR_G1      (uint8_t)(1 << 4)
+#define ODR_G2      (uint8_t)(1 << 5)
+#define ODR_G3      (uint8_t)(1 << 6)
+
+// CTRL3_C
+#define SW_RESET    (uint8_t)(1 << 0)
+#define BLE         (uint8_t)(1 << 1)
+#define IF_INC      (uint8_t)(1 << 2)
+#define SIM         (uint8_t)(1 << 3)
+#define PP_OD       (uint8_t)(1 << 4)
+#define H_LACTIVE   (uint8_t)(1 << 5)
+#define BDU         (uint8_t)(1 << 6)
+#define BOOT        (uint8_t)(1 << 7)
+
+// CTRL4_C
+#define LPF1_SEL_G          (uint8_t)(1 << 1)
+#define I2C_disable         (uint8_t)(1 << 2)
+#define DRDY_MASK           (uint8_t)(1 << 3)
+#define DEN_DRDY_INT1       (uint8_t)(1 << 4)
+#define INT2_on_INT1        (uint8_t)(1 << 5)
+#define SLEEP               (uint8_t)(1 << 6)
+#define DEN_XL_EN           (uint8_t)(1 << 7)
+
+// CTRL5_C
+#define ST0_XL              (uint8_t)(1 << 0)
+#define ST1_XL              (uint8_t)(1 << 1)
+#define ST0_G               (uint8_t)(1 << 2)
+#define ST1_G               (uint8_t)(1 << 3)
+#define DEN_LH              (uint8_t)(1 << 4)
+#define ROUNDING0           (uint8_t)(1 << 5)
+#define ROUNDING1           (uint8_t)(1 << 6)
+#define ROUNDING2           (uint8_t)(1 << 7)
+
+// CTRL6_C
+#define FTYPE_0             (uint8_t)(1 << 0)
+#define FTYPE_1             (uint8_t)(1 << 1)
+#define USR_OFF_W           (uint8_t)(1 << 3)
+#define XL_HM_MODE          (uint8_t)(1 << 4)
+#define LVL2_EN             (uint8_t)(1 << 5)
+#define LVL1_EN             (uint8_t)(1 << 6)
+#define TRIG_EN             (uint8_t)(1 << 7)
+
+// CTRL7_G
+#define HPM0_G              (uint8_t)(1 << 4)
+#define HPM1_G              (uint8_t)(1 << 5)
+#define HP_G_EN             (uint8_t)(1 << 6)
+#define G_HM_MODE           (uint8_t)(1 << 7)
+
+// CTRL8_XL
+#define LOW_PASS_ON_6D      (uint8_t)(1 << 0)
+#define HP_SLOPE_XL_EN      (uint8_t)(1 << 2)
+#define INPUT_COMPOSITE     (uint8_t)(1 << 3)
+#define HP_REF_MODE         (uint8_t)(1 << 4)
+#define HPCF_XL0            (uint8_t)(1 << 5)
+#define HPCF_XL1            (uint8_t)(1 << 6)
+#define LPF2_XL_EN          (uint8_t)(1 << 7)
+
+// CTRL9_XL
+#define SIGN_MOTION_EN      (uint8_t)(1 << 0)
+#define PEDO_RST_STEP       (uint8_t)(1 << 1)
+#define SOFT_EN             (uint8_t)(1 << 3)
+#define DEN_XL_G            (uint8_t)(1 << 4)
+#define DEN_Z               (uint8_t)(1 << 5)
+#define DEN_Y               (uint8_t)(1 << 6)
+#define DEN_X               (uint8_t)(1 << 7)
+
+// CTRL10_C
+#define FUNC_EN             (uint8_t)(1 << 2)
+#define TILT_EN             (uint8_t)(1 << 3)
+#define PEDO_EN             (uint8_t)(1 << 4)
+#define TIMER_EN            (uint8_t)(1 << 5)
+#define WRIST_TILT_EN       (uint8_t)(1 << 7)
+
+// MASTER_CONFIG
+#define MASTER_ON           (uint8_t)(1 << 0)
+#define IRON_EN             (uint8_t)(1 << 1)
+#define PASS_THROUGH_MODE   (uint8_t)(1 << 2)
+#define PULL_UP_EN          (uint8_t)(1 << 3)
+#define START_CONFIG        (uint8_t)(1 << 4)
+#define DATA_VALID_SEL_FIFO (uint8_t)(1 << 6)
+#define DRDY_ON_INT1        (uint8_t)(1 << 7)
+
+// TAP_SRC
+#define TAP_Z               (uint8_t)(1 << 0)
+#define TAP_Y               (uint8_t)(1 << 1)
+#define TAP_X               (uint8_t)(1 << 2)
+#define TAP_SIGN            (uint8_t)(1 << 3)
+#define DOUBLE_TAP          (uint8_t)(1 << 4)
+#define SINGLE_TAP          (uint8_t)(1 << 5)
+#define TAP_IA              (uint8_t)(1 << 6)
+
+// D6D_SRC
+#define XL                  (uint8_t)(1 << 0)
+#define XH                  (uint8_t)(1 << 1)
+#define YL                  (uint8_t)(1 << 2)
+#define YH                  (uint8_t)(1 << 3)
+#define ZL                  (uint8_t)(1 << 4)
+#define ZH                  (uint8_t)(1 << 5)
+#define D6D_IA              (uint8_t)(1 << 6)
+
+// FUNC_SRC1
+#define SENSORHUB_END_OP    (uint8_t)(1 << 0)
+#define SI_END_OP           (uint8_t)(1 << 1)
+#define HI_FAIL             (uint8_t)(1 << 2)
+#define STEP_OVERFLOW       (uint8_t)(1 << 3)
+#define STEP_DETECTED       (uint8_t)(1 << 4)
+#define TILT_IA             (uint8_t)(1 << 5)
+#define SIGN_MOTION_IA      (uint8_t)(1 << 6)
+#define STEP_COUNT_DELTA_IA (uint8_t)(1 << 7)
+
+// FUNC_SRC2
+#define WRIST_TILT_IA       (uint8_t)(1 << 0)
+#define SLAVE0_NACK         (uint8_t)(1 << 3)
+#define SLAVE1_NACK         (uint8_t)(1 << 4)
+#define SLAVE2_NACK         (uint8_t)(1 << 5)
+#define SLAVE3_NACK         (uint8_t)(1 << 6)
+
+// WRIST_TILT_IA
+#define WRIST_TILT_IA_Zneg  (uint8_t)(1 << 2)
+#define WRIST_TILT_IA_Zpos  (uint8_t)(1 << 3)
+#define WRIST_TILT_IA_Yneg  (uint8_t)(1 << 4)
+#define WRIST_TILT_IA_Ypos  (uint8_t)(1 << 5)
+#define WRIST_TILT_IA_Xneg  (uint8_t)(1 << 6)
+#define WRIST_TILT_IA_Xpos  (uint8_t)(1 << 7)
+
+// TAP_CFG
+#define LIR                 (uint8_t)(1 << 0)
+#define TAP_Z_EN            (uint8_t)(1 << 1)
+#define TAP_Y_EN            (uint8_t)(1 << 2)
+#define TAP_X_EN            (uint8_t)(1 << 3)
+#define SLOPE_FDS           (uint8_t)(1 << 4)
+#define INACT_EN0           (uint8_t)(1 << 5)
+#define INACT_EN1           (uint8_t)(1 << 6)
+#define INTERRUPTS_ENABLE   (uint8_t)(1 << 7)
+
+// TAP_THS_6D
+#define TAP_THS0            (uint8_t)(1 << 0)
+#define TAP_THS1            (uint8_t)(1 << 1)
+#define TAP_THS2            (uint8_t)(1 << 2)
+#define TAP_THS3            (uint8_t)(1 << 3)
+#define TAP_THS4            (uint8_t)(1 << 4)
+#define SIXD_THS0           (uint8_t)(1 << 5)
+#define SIXD_THS1           (uint8_t)(1 << 6)
+#define D4D_EN              (uint8_t)(1 << 7)
+
+// INT_DUR2
+#define SHOCK0              (uint8_t)(1 << 0)
+#define SHOCK1              (uint8_t)(1 << 1)
+#define QUIET0              (uint8_t)(1 << 2)
+#define QUIET1              (uint8_t)(1 << 3)
+#define DUR0                (uint8_t)(1 << 4)
+#define DUR1                (uint8_t)(1 << 5)
+#define DUR2                (uint8_t)(1 << 6)
+#define DUR3                (uint8_t)(1 << 7)
+
+// WAKE_UP_THS
+#define WK_THS0             (uint8_t)(1 << 1)
+#define WK_THS1             (uint8_t)(1 << 2)
+#define WK_THS2             (uint8_t)(1 << 3)
+#define WK_THS3             (uint8_t)(1 << 4)
+#define WK_THS4             (uint8_t)(1 << 5)
+#define WK_THS5             (uint8_t)(1 << 6)
+#define SINGLE_DOUBLE_TAP   (uint8_t)(1 << 7)
+
+// WAKE_UP_DUR
+#define SLEEP_DUR0          (uint8_t)(1 << 0)
+#define SLEEP_DUR1          (uint8_t)(1 << 1)
+#define SLEEP_DUR2          (uint8_t)(1 << 2)
+#define SLEEP_DUR3          (uint8_t)(1 << 3)
+#define TIMER_HR            (uint8_t)(1 << 4)
+#define WAKE_DUR0           (uint8_t)(1 << 5)
+#define WAKE_DUR1           (uint8_t)(1 << 6)
+#define FF_DUR5             (uint8_t)(1 << 7)
+
+// FREE_FALL
+#define FF_THS0             (uint8_t)(1 << 0)
+#define FF_THS1             (uint8_t)(1 << 1)
+#define FF_THS2             (uint8_t)(1 << 2)
+#define FF_DUR0             (uint8_t)(1 << 3)
+#define FF_DUR1             (uint8_t)(1 << 4)
+#define FF_DUR2             (uint8_t)(1 << 5)
+#define FF_DUR3             (uint8_t)(1 << 6)
+#define FF_DUR4             (uint8_t)(1 << 7)
+
+// MD1_CFG
+#define INT1_TIMER          (uint8_t)(1 << 0)
+#define INT1_TILT           (uint8_t)(1 << 1)
+#define INT1_6D             (uint8_t)(1 << 2)
+#define INT1_DOUBLE_TAP     (uint8_t)(1 << 3)
+#define INT1_FF             (uint8_t)(1 << 4)
+#define INT1_WU             (uint8_t)(1 << 5)
+#define INT1_SINGLE_TAP     (uint8_t)(1 << 6)
+#define INT1_INACT_STATE    (uint8_t)(1 << 7)
+
+// MD2_CFG
+#define INT2_IRON           (uint8_t)(1 << 0)
+#define INT2_TILT           (uint8_t)(1 << 1)
+#define INT2_6D             (uint8_t)(1 << 2)
+#define INT2_DOUBLE_TAP     (uint8_t)(1 << 3)
+#define INT2_FF             (uint8_t)(1 << 4)
+#define INT2_WU             (uint8_t)(1 << 5)
+#define INT2_SINGLE_TAP     (uint8_t)(1 << 6)
+#define INT2_INACT_STATE    (uint8_t)(1 << 7)
+
+// X_OFS_USR
+#define X_OFS_USR_0         (uint8_t)(1 << 0)
+#define X_OFS_USR_1         (uint8_t)(1 << 1)
+#define X_OFS_USR_2         (uint8_t)(1 << 2)
+#define X_OFS_USR_3         (uint8_t)(1 << 3)
+#define X_OFS_USR_4         (uint8_t)(1 << 4)
+#define X_OFS_USR_5         (uint8_t)(1 << 5)
+#define X_OFS_USR_6         (uint8_t)(1 << 6)
+#define X_OFS_USR_7         (uint8_t)(1 << 7)
+
+// Y_OFS_USR
+#define Y_OFS_USR_0         (uint8_t)(1 << 0)
+#define Y_OFS_USR_1         (uint8_t)(1 << 1)
+#define Y_OFS_USR_2         (uint8_t)(1 << 2)
+#define Y_OFS_USR_3         (uint8_t)(1 << 3)
+#define Y_OFS_USR_4         (uint8_t)(1 << 4)
+#define Y_OFS_USR_5         (uint8_t)(1 << 5)
+#define Y_OFS_USR_6         (uint8_t)(1 << 6)
+#define Y_OFS_USR_7         (uint8_t)(1 << 7)
+
+// Z_OFS_USR
+#define Z_OFS_USR_0         (uint8_t)(1 << 0)
+#define Z_OFS_USR_1         (uint8_t)(1 << 1)
+#define Z_OFS_USR_2         (uint8_t)(1 << 2)
+#define Z_OFS_USR_3         (uint8_t)(1 << 3)
+#define Z_OFS_USR_4         (uint8_t)(1 << 4)
+#define Z_OFS_USR_5         (uint8_t)(1 << 5)
+#define Z_OFS_USR_6         (uint8_t)(1 << 6)
+#define Z_OFS_USR_7         (uint8_t)(1 << 7)
 
 #endif /* LSM6DSL_LSM6DSL_REG_H_ */
