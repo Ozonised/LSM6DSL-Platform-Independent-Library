@@ -17,6 +17,10 @@
 #define LSM6DSL_INTF_RET_TYPE_SUCCESS 0
 #endif
 
+#ifndef LSM6DSL_INTF_RET_TYPE_FAILURE
+#define LSM6DSL_INTF_RET_TYPE_FAILURE 1
+#endif
+
 LSM6DSL_INTF_RET_TYPE LSM6DSL_PortI2CReadReg(void *hinterface, uint8_t chipAddr,
 		uint8_t RegAddr, uint8_t *buf, uint16_t len);
 

@@ -111,7 +111,7 @@
 #define WHO_AM_I_VAL			  (uint8_t)0x6A
 
 /*
- *	Register Mask
+ *	Registers Bit positions
  */
 
 // FUNC_CFG_ACCESS

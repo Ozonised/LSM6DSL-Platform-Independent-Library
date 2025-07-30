@@ -14,12 +14,49 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, WHO_AM_I, &t, 1)
-				== LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		if (dev->read(dev->hInterface, dev->chipAddr, WHO_AM_I, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			if (t == WHO_AM_I_VAL)
-				return 1;
+				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
-	return 0;
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
+{
+	if (dev != NULL)
+	{
+		uint8_t t;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			switch (m)
+			{
+			case XL_ODR_12_5Hz:
+			case XL_ODR_26Hz:
+			case XL_ODR_52Hz:
+			case XL_ODR_104Hz:
+			case XL_ODR_208Hz:
+			case XL_ODR_416Hz:
+			case XL_ODR_833Hz:
+			case XL_ODR_1_66kHz:
+			case XL_ODR_3_33kHz:
+			case XL_ODR_6_66kHz:
+			case XL_ODR_1_6Hz:
+				t &= 0x0F;	// clear the ODR_XLn bits
+				t |= (m << ODR_XL0_Pos );
+
+				if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
