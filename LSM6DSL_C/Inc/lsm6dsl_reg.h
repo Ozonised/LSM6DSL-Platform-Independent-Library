@@ -87,7 +87,7 @@
 #define SENSORHUB18_REG           (uint8_t)0x52
 #define FUNC_SRC1                 (uint8_t)0x53
 #define FUNC_SRC2                 (uint8_t)0x54
-#define WRIST_TILT_IA             (uint8_t)0x55
+#define WRIST_TILT_IA_0             (uint8_t)0x55
 #define TAP_CFG                   (uint8_t)0x58
 #define TAP_THS_6D                (uint8_t)0x59
 #define INT_DUR2                  (uint8_t)0x5A
@@ -197,25 +197,26 @@
 #define INT2_STEP_DELTA     (uint8_t)(1 << 7)
 
 // CTRL1_XL
-#define BW0_XL         (uint8_t)(1 << 1)
-#define LPF1_BW_SEL    (uint8_t)(1 << 2)
-#define FS_XL0_Pos 	   (uint8_t) (3)
-#define FS_XL0         (uint8_t)(1 << 3)
-#define FS_XL1         (uint8_t)(1 << 4)
-#define ODR_XL0_Pos    (uint8_t) (5)
-#define ODR_XL0        (uint8_t)(1 << 5)
-#define ODR_XL2        (uint8_t)(1 << 6)
-#define ODR_XL3        (uint8_t)(1 << 7)
+#define BW0_XL         (uint8_t)(1 << 0)
+#define LPF1_BW_SEL    (uint8_t)(1 << 1)
+#define FS_XL0_Pos 	   (uint8_t) (2)
+#define FS_XL0         (uint8_t)(1 << 2)
+#define FS_XL1         (uint8_t)(1 << 3)
+#define ODR_XL0_Pos    (uint8_t) (4)
+#define ODR_XL0        (uint8_t)(1 << 4)
+#define ODR_XL2        (uint8_t)(1 << 5)
+#define ODR_XL3        (uint8_t)(1 << 6)
 
 // CTRL2_G
-#define FS_G0_Pos   (uint8_t)(2)
+#define FS_125_Pos  (uint8_t)(1)
+#define FS_125		(uint8_t)(1 << 1)
 #define FS_G0       (uint8_t)(1 << 2)
-#define FS_G1       (uint8_t)(1 << 1)
-#define ODR_G0_Pos  (uint8_t)(3)
-#define ODR_G0      (uint8_t)(1 << 3)
-#define ODR_G1      (uint8_t)(1 << 4)
-#define ODR_G2      (uint8_t)(1 << 5)
-#define ODR_G3      (uint8_t)(1 << 6)
+#define FS_G1       (uint8_t)(1 << 3)
+#define ODR_G0_Pos  (uint8_t)(4)
+#define ODR_G0      (uint8_t)(1 << 4)
+#define ODR_G1      (uint8_t)(1 << 5)
+#define ODR_G2      (uint8_t)(1 << 6)
+#define ODR_G3      (uint8_t)(1 << 7)
 
 // CTRL3_C
 #define SW_RESET    (uint8_t)(1 << 0)

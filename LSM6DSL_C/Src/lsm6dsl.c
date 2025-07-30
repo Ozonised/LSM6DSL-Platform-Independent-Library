@@ -60,3 +60,41 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
+{
+	if (dev != NULL)
+	{
+		uint8_t t;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			switch (m)
+			{
+			case G_ODR_12_5Hz:
+			case G_ODR_26Hz:
+			case G_ODR_52Hz:
+			case G_ODR_104Hz:
+			case G_ODR_208Hz:
+			case G_ODR_416Hz:
+			case G_ODR_833Hz:
+			case G_ODR_1_66kHz:
+			case G_ODR_3_33kHz:
+			case G_ODR_6_66kHz:
+				t &= 0x0E;	// clear the ODR_Gn bits
+				t |= (m << ODR_G0_Pos );
+
+				if (dev->write(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
+						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
