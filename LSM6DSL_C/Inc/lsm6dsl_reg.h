@@ -258,6 +258,7 @@
 #define TRIG_EN             (uint8_t)(1 << 7)
 
 // CTRL7_G
+#define ROUNDING_STATUS		(uint8_t)(1 << 2)
 #define HPM0_G              (uint8_t)(1 << 4)
 #define HPM1_G              (uint8_t)(1 << 5)
 #define HP_G_EN             (uint8_t)(1 << 6)

@@ -51,9 +51,9 @@ enum LSM6DSL_XL_ODR
 	XL_ODR_1_6Hz
 };
 
-enum LSM6DSL_XL_G_PowerMode
+enum LSM6DSL_XL_G_HM_MODE
 {
-	POWER_DOWN = 0, DEFAULT, HIGH_PERFORMANCE
+	XL_G_HM_MODE_ON = 0, XL_G_HM_MODE_OFF
 };
 
 enum LSM6DSL_G_FS_Range
@@ -113,6 +113,19 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
 		enum LSM6DSL_XL_FS_Range r);
 
 /*
+ * @brief Enable/disable accelerometers high performance mode
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] m one of LSM6DSL_XL_G_HM_MODE values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
+		enum LSM6DSL_XL_G_HM_MODE m);
+
+/*
  * @brief Sets Gyros ODR
  *
  * @param[in] dev Pointer to the LSM6DSL structure
@@ -136,5 +149,18 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m);
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
 		enum LSM6DSL_G_FS_Range r);
+
+/*
+ * @brief Enable/disable gyroscope high performance mode
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] m one of LSM6DSL_XL_G_HM_MODE values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
+		enum LSM6DSL_XL_G_HM_MODE m);
 
 #endif /* LSM6DSL_LSM6DSL_H_ */

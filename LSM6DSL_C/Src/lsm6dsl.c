@@ -197,3 +197,58 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
+		enum LSM6DSL_XL_G_HM_MODE m)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL6_C, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (XL_G_HM_MODE_ON)
+				t &= ~XL_HM_MODE;
+			else
+				t |= XL_HM_MODE;
+
+			if (dev->write(dev->hInterface, dev->chipAddr, CTRL6_C, &t,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, CTRL6_C, &reg, 1)
+						== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == t))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
+		enum LSM6DSL_XL_G_HM_MODE m)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL7_G, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (XL_G_HM_MODE_ON)
+				t &= ~G_HM_MODE;
+			else
+				t |= G_HM_MODE;
+
+			if (dev->write(dev->hInterface, dev->chipAddr, CTRL7_G, &t,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, CTRL7_G, &reg, 1)
+						== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == t))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
