@@ -24,6 +24,32 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL4_C, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (en)
+				t |= INT2_on_INT1;
+			else
+				t &= ~INT2_on_INT1;
+
+			if (dev->write(dev->hInterface, dev->chipAddr, CTRL4_C, &t,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, CTRL4_C, &reg, 1)
+						== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == t))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 {
 	if (dev != NULL)
@@ -252,3 +278,4 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
+

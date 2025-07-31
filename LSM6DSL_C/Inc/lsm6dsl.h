@@ -88,6 +88,18 @@ enum LSM6DSL_G_ODR
 LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
 
 /*
+ * @brief Maps IRQs on INT2 pin to INT1 pin
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] en one to enable, 0 to disable
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en);
+
+/*
  * @brief Sets Accelerometers ODR
  *
  * @param[in] dev Pointer to the LSM6DSL structure
