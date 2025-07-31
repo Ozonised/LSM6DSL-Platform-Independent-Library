@@ -37,7 +37,8 @@ enum LSM6DSL_XL_FS_Range
 
 enum LSM6DSL_XL_ODR
 {
-	XL_ODR_12_5Hz = 1,
+	XL_ODR_POWER_DOWN = 0,
+	XL_ODR_12_5Hz,
 	XL_ODR_26Hz,
 	XL_ODR_52Hz,
 	XL_ODR_104Hz,
@@ -62,7 +63,8 @@ enum LSM6DSL_G_FS_Range
 
 enum LSM6DSL_G_ODR
 {
-	G_ODR_12_5Hz = 1,
+	G_ODR_POWER_DOWN = 0,
+	G_ODR_12_5Hz,
 	G_ODR_26Hz,
 	G_ODR_52Hz,
 	G_ODR_104Hz,

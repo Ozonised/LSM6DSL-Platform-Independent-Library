@@ -35,9 +35,9 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 			t &= 0x0F;	// clear the ODR_XLn bits
 			switch (m)
 			{
-			case XL_ODR_12_5Hz:
+			case XL_ODR_POWER_DOWN:
 				break;
-
+			case XL_ODR_12_5Hz:
 			case XL_ODR_26Hz:
 			case XL_ODR_52Hz:
 			case XL_ODR_104Hz:
@@ -81,8 +81,9 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 			t &= 0x0E;	// clear the ODR_Gn bits
 			switch (m)
 			{
-			case G_ODR_12_5Hz:
+			case G_ODR_POWER_DOWN:
 				break;
+			case G_ODR_12_5Hz:
 			case G_ODR_26Hz:
 			case G_ODR_52Hz:
 			case G_ODR_104Hz:
