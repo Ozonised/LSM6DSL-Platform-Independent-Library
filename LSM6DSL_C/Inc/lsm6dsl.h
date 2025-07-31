@@ -76,6 +76,30 @@ enum LSM6DSL_G_ODR
 	G_ODR_6_66kHz,
 };
 
+enum LSM6DSL_INT1_Sources
+{
+	INT1_DRDY_XL = (1 << 0),
+	INT1_DRDY_G = (1 << 1),
+	INT1_BOOT = (1 << 2),
+	INT1_FTH = (1 << 3),
+	INT1_FIFO_OVR = (1 << 4),
+	INT1_FULL_FLAG = (1 << 5),
+	INT1_SIGN_MOT = (1 << 6),
+	INT1_STEP_DETECTOR = (1 << 7),
+};
+
+enum LSM6DSL_INT2_Sources
+{
+	INT2_DRDY_XL = (1 << 0),
+	INT2_DRDY_G = (1 << 1),
+	INT2_DRDY_TEMP = (1 << 2),
+	INT2_FTH = (1 << 3),
+	INT2_FIFO_OVR = (1 << 4),
+	INT2_FULL_FLAG = (1 << 5),
+	INT2_STEP_COUNT_OV = (1 << 6),
+	INT2_STEP_DELTA = (1 << 7),
+};
+
 /*
  * @brief Checks if the LSM6DSL is present on the bus
  *
@@ -91,13 +115,45 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
  * @brief Maps IRQs on INT2 pin to INT1 pin
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] en one to enable, 0 to disable
+ * @param[in] en 1 to enable, 0 to disable
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en);
+
+/*
+ * @brief Enable/Disable INT1 IRQ sources
+ *
+ * Note: This function overwrites the INT1_CTRL reg with value of s.
+ * To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] s values from LSM6DSL_INT1_Sources
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
+		enum LSM6DSL_INT1_Sources s);
+
+/*
+ * @brief Enable/Disable INT2 IRQ sources
+ *
+ * Note: This function overwrites the INT2_CTRL reg with value of s.
+ * To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] s values from LSM6DSL_INT2_Sources
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
+		enum LSM6DSL_INT2_Sources s);
 
 /*
  * @brief Sets Accelerometers ODR

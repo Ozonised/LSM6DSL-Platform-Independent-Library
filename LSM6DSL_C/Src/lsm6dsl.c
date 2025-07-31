@@ -323,3 +323,45 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev)
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
+		enum LSM6DSL_INT1_Sources s)
+{
+	if (dev != NULL)
+	{
+		uint8_t reg;
+		if (s >= 0 && s <= 255)
+		{
+			if (dev->write(dev->hInterface, dev->chipAddr, INT1_CTRL, &s,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, INT1_CTRL, &reg,
+						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == s))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
+		enum LSM6DSL_INT2_Sources s)
+{
+	if (dev != NULL)
+	{
+		uint8_t reg;
+		if (s >= 0 && s <= 255)
+		{
+			if (dev->write(dev->hInterface, dev->chipAddr, INT2_CTRL, &s,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, INT2_CTRL, &reg,
+						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == s))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
