@@ -210,6 +210,7 @@
 // CTRL2_G
 #define FS_125_Pos  (uint8_t)(1)
 #define FS_125		(uint8_t)(1 << 1)
+#define FS_G0_Pos   (uint8_t)(2)
 #define FS_G0       (uint8_t)(1 << 2)
 #define FS_G1       (uint8_t)(1 << 3)
 #define ODR_G0_Pos  (uint8_t)(4)

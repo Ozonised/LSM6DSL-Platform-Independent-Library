@@ -80,7 +80,7 @@ enum LSM6DSL_G_ODR
  * @param[in] dev Pointer to the LSM6DSL structure
  *
  * @return LSM6DSL_INTF_RET_TYPE
- * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS if the device is present
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS device is present
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE absent, error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
@@ -89,13 +89,26 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
  * @brief Sets Accelerometers ODR
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] m one of enum LSM6DSL_XL_ODR values
+ * @param[in] m one of LSM6DSL_XL_ODR values
  *
  * @return LSM6DSL_INTF_RET_TYPE
- * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successfull
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m);
+
+/*
+ * @brief Sets Accelerometers Full Scale Range
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] r one of LSM6DSL_XL_FS_Range values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
+		enum LSM6DSL_XL_FS_Range r);
 
 /*
  * @brief Sets Gyros ODR
@@ -104,9 +117,22 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m);
  * @param[in] m one of enum LSM6DSL_G_ODR values
  *
  * @return LSM6DSL_INTF_RET_TYPE
- * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successfull
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m);
+
+/*
+ * @brief Sets Gyro Full Scale Range
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] r one of LSM6DSL_G_FS_Range values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
+		enum LSM6DSL_G_FS_Range r);
 
 #endif /* LSM6DSL_LSM6DSL_H_ */

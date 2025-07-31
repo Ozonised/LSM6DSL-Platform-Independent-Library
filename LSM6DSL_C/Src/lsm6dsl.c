@@ -110,3 +110,81 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
+		enum LSM6DSL_XL_FS_Range r)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			switch (r)
+			{
+			case XL_FS_2G:
+			case XL_FS_4G:
+			case XL_FS_8G:
+			case XL_FS_16G:
+				t &= 0xF3;	// clear the FS_XLn bits
+				t |= (r << FS_XL0_Pos );
+
+				if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+						1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				{
+					// verify the written value
+					if ((dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL,
+							&reg, 1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+							&& (reg == t))
+						return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
+		enum LSM6DSL_G_FS_Range r)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			t &= 0xF0;	// clear the FS_Gn and FS_G125 bits
+			switch (r)
+			{
+			case G_FS_250DPS:
+				break;
+			case G_FS_500DPS:
+			case G_FS_1000DPS:
+			case G_FS_2000DPS:
+				t |= (r << FS_G0_Pos );
+				break;
+
+			case G_FS_125DPS:
+				t |= FS_125;
+				break;
+			default:
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+				break;
+			}
+
+			if (dev->write(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, CTRL2_G, &reg, 1)
+						== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == t))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+	}
+
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
