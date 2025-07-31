@@ -315,6 +315,12 @@
 #define ZL                  (uint8_t)(1 << 4)
 #define ZH                  (uint8_t)(1 << 5)
 #define D6D_IA              (uint8_t)(1 << 6)
+#define DEN_DRDY			(uint8_t)(1 << 7)
+
+// STATUS_REG
+#define XLDA       			(uint8_t)(1 << 0)
+#define GDA        			(uint8_t)(1 << 1)
+#define TDA        			(uint8_t)(1 << 2)
 
 // FUNC_SRC1
 #define SENSORHUB_END_OP    (uint8_t)(1 << 0)

@@ -96,6 +96,21 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+LSM6DSL_INTF_RET_TYPE LSM6DSL_isAccelDataAvailabe(LSM6DSL *dev)
+{
+	if (dev != NULL)
+	{
+		uint8_t t;
+		if (dev->read(dev->hInterface, dev->chipAddr, STATUS_REG, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (t & XLDA)
+				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 {
 	if (dev != NULL)
@@ -279,3 +294,32 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev)
+{
+	if (dev != NULL)
+	{
+		uint8_t t;
+		if (dev->read(dev->hInterface, dev->chipAddr, STATUS_REG, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (t & GDA)
+				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev)
+{
+	if (dev != NULL)
+	{
+		uint8_t t;
+		if (dev->read(dev->hInterface, dev->chipAddr, STATUS_REG, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (t & TDA)
+				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}

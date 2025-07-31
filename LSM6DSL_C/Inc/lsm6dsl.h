@@ -125,6 +125,17 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
 		enum LSM6DSL_XL_FS_Range r);
 
 /*
+ * @brief Checks if accelerometer data is available
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS available
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE unavailable, error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_isAccelDataAvailabe(LSM6DSL *dev);
+
+/*
  * @brief Enable/disable accelerometers high performance mode
  *
  * @param[in] dev Pointer to the LSM6DSL structure
@@ -163,6 +174,17 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
 		enum LSM6DSL_G_FS_Range r);
 
 /*
+ * @brief Checks if gyroscope data is available
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS available
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE unavailable, error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev);
+
+/*
  * @brief Enable/disable gyroscope high performance mode
  *
  * @param[in] dev Pointer to the LSM6DSL structure
@@ -174,5 +196,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
 		enum LSM6DSL_XL_G_HM_MODE m);
+
+/*
+ * @brief Checks if temperature data is available
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS available
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE unavailable, error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev);
 
 #endif /* LSM6DSL_LSM6DSL_H_ */
