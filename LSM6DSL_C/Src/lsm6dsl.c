@@ -365,3 +365,30 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL3_C, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (m)
+				t |= BDU;
+			else
+				t &= ~BDU;
+
+			if (dev->write(dev->hInterface, dev->chipAddr, CTRL3_C, &t,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, CTRL3_C, &reg, 1)
+						== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == t))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+	}
+
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}

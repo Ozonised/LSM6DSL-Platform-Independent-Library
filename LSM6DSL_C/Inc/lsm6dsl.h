@@ -78,6 +78,7 @@ enum LSM6DSL_G_ODR
 
 enum LSM6DSL_INT1_Sources
 {
+	INT1_DRDY_NONE = 0,
 	INT1_DRDY_XL = (1 << 0),
 	INT1_DRDY_G = (1 << 1),
 	INT1_BOOT = (1 << 2),
@@ -90,6 +91,7 @@ enum LSM6DSL_INT1_Sources
 
 enum LSM6DSL_INT2_Sources
 {
+	INT2_DRDY_NONE = 0,
 	INT2_DRDY_XL = (1 << 0),
 	INT2_DRDY_G = (1 << 1),
 	INT2_DRDY_TEMP = (1 << 2),
@@ -112,6 +114,38 @@ enum LSM6DSL_INT2_Sources
 LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
 
 /*
+ * @brief Enable/Disable INT1 IRQ sources
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] s values from LSM6DSL_INT1_Sources
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @note This function overwrites the INT1_CTRL reg with value of s.
+ * 		 To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
+		enum LSM6DSL_INT1_Sources s);
+
+/*
+ * @brief Enable/Disable INT2 IRQ sources
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] s values from LSM6DSL_INT2_Sources
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @note This function overwrites the INT2_CTRL reg with value of s.
+ * 	   	 To enable multiple sources the values of LSM6DSL_INT2_Sources should be ORed.
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
+		enum LSM6DSL_INT2_Sources s);
+
+/*
  * @brief Maps IRQs on INT2 pin to INT1 pin
  *
  * @param[in] dev Pointer to the LSM6DSL structure
@@ -124,36 +158,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en);
 
 /*
- * @brief Enable/Disable INT1 IRQ sources
- *
- * Note: This function overwrites the INT1_CTRL reg with value of s.
- * To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
+ * @brief Enable/Disable block update mode(BDU)
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] s values from LSM6DSL_INT1_Sources
+ * @param[in] m 1 to enable, 0 to disable
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
-		enum LSM6DSL_INT1_Sources s);
-
-/*
- * @brief Enable/Disable INT2 IRQ sources
- *
- * Note: This function overwrites the INT2_CTRL reg with value of s.
- * To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
- *
- * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] s values from LSM6DSL_INT2_Sources
- *
- * @return LSM6DSL_INTF_RET_TYPE
- * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
- * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
- */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
-		enum LSM6DSL_INT2_Sources s);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m);
 
 /*
  * @brief Sets Accelerometers ODR
@@ -164,6 +178,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @see Table 12 & 13 of AN5040 for number of samples to discard.
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m);
 
@@ -200,6 +216,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isAccelDataAvailabe(LSM6DSL *dev);
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @see Table 12 & 13 of AN5040 for number of samples to discard.
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
 		enum LSM6DSL_XL_G_HM_MODE m);
@@ -213,6 +231,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @see Table 14, 15 & 16 of AN5040 for number of samples to discard.
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m);
 
@@ -249,6 +269,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev);
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @see Table 14, 15 & 16 of AN5040 for number of samples to discard.
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
 		enum LSM6DSL_XL_G_HM_MODE m);
