@@ -24,6 +24,59 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev,
+		enum LSM6DSL_ENDIAN end)
+{
+	if (dev != NULL)
+	{
+		uint8_t t, reg;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL3_C, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			switch (end)
+			{
+			case LITTLE_ENDIAN:
+				t &= ~BLE;
+				break;
+
+			case BIG_ENDIAN:
+				t |= BLE;
+				break;
+
+			default:
+				// incorrect value
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+				break;
+			}
+
+			if (dev->write(dev->hInterface, dev->chipAddr, CTRL3_C, &t,
+					1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// verify the written value
+				if ((dev->read(dev->hInterface, dev->chipAddr, CTRL3_C, &reg, 1)
+						== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == t))
+					return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			}
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr,
+		uint8_t imuAddr)
+{
+	if (dev != NULL && interfacePtr != NULL)
+	{
+		dev->hInterface = interfacePtr;
+		dev->chipAddr = imuAddr;
+		dev->read = LSM6DSL_PortI2CReadReg;
+		dev->write = LSM6DSL_PortI2CWriteReg;
+		dev->delayMs = LSM6DSL_PortDelayMs;
+	}
+
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en)
 {
 	if (dev != NULL)
@@ -393,26 +446,36 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, struct AccelData *xl)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, AccelData *xl)
 {
 	if (dev != NULL && xl != NULL)
 	{
-		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_XL, xl,
+		uint8_t buf[6];
+		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_XL, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
+			xl->accel_x = (buf[1] << 8) | buf[0];
+			xl->accel_y = (buf[3] << 8) | buf[2];
+			xl->accel_z = (buf[5] << 8) | buf[4];
+
 			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, struct GyroData *gy)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, GyroData *gy)
 {
 	if (dev != NULL && gy != NULL)
 	{
-		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_G, gy,
+		uint8_t buf[6];
+		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_G, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
+			gy->gyro_x = (buf[1] << 8) | buf[0];
+			gy->gyro_y = (buf[3] << 8) | buf[2];
+			gy->gyro_z = (buf[5] << 8) | buf[4];
+
 			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
