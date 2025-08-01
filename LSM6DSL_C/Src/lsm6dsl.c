@@ -392,3 +392,29 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m)
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, struct AccelData *xl)
+{
+	if (dev != NULL && xl != NULL)
+	{
+		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_XL, xl,
+				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, struct GyroData *gy)
+{
+	if (dev != NULL && gy != NULL)
+	{
+		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_G, gy,
+				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}

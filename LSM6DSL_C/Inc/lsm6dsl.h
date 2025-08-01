@@ -102,6 +102,20 @@ enum LSM6DSL_INT2_Sources
 	INT2_STEP_DELTA = (1 << 7),
 };
 
+struct AccelData
+{
+	int16_t accel_x;
+	int16_t accel_y;
+	int16_t accel_z;
+};
+
+struct GyroData
+{
+	int16_t gyro_x;
+	int16_t gyro_y;
+	int16_t gyro_z;
+};
+
 /*
  * @brief Checks if the LSM6DSL is present on the bus
  *
@@ -223,6 +237,18 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
 		enum LSM6DSL_XL_G_HM_MODE m);
 
 /*
+ * @brief Read accelerometer
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] xl pointer to AccelData structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, struct AccelData *xl);
+
+/*
  * @brief Sets Gyros ODR
  *
  * @param[in] dev Pointer to the LSM6DSL structure
@@ -274,6 +300,18 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev);
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
 		enum LSM6DSL_XL_G_HM_MODE m);
+
+/*
+ * @brief Read gyroscope
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] gy pointer to GyroData structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, struct GyroData *gy);
 
 /*
  * @brief Checks if temperature data is available
