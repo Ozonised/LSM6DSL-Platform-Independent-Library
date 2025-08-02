@@ -10,13 +10,13 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
 #include "lsm6dsl_port.h"
 
-typedef LSM6DSL_INTF_RET_TYPE (*LSM6DSL_ReadFuncPtr)(void *hinterface,
-		uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
+typedef LSM6DSL_INTF_RET_TYPE (*LSM6DSL_ReadFuncPtr)(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
 
-typedef LSM6DSL_INTF_RET_TYPE (*LSM6DSL_WriteFuncPtr)(void *hinterface,
-		uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
+typedef LSM6DSL_INTF_RET_TYPE (*LSM6DSL_WriteFuncPtr)(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
 
 typedef void (*LSM6DSL_DelayMsFuncPtr)(void *hInterface, uint32_t ms);
 
@@ -33,6 +33,14 @@ typedef struct LSM6DSL_DEV
 enum LSM6DSL_XL_FS_Range
 {
 	LSM6DSL_XL_FS_2G = 0, LSM6DSL_XL_FS_16G, LSM6DSL_XL_FS_4G, LSM6DSL_XL_FS_8G
+};
+
+enum LSM6DSL_XL_FS_Sensitivity
+{
+	LSM6DSL_XL_FS_2G_SENS = 61,
+	LSM6DSL_XL_FS_4G_SENS = 122,
+	LSM6DSL_XL_FS_8G_SENS = 244,
+	LSM6DSL_XL_FS_16G_SENS = 488
 };
 
 enum LSM6DSL_XL_ODR
@@ -148,8 +156,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev);
  *
  * @see section 4.5 of AN5040
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev,
-		enum LSM6DSL_ENDIAN end);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev, enum LSM6DSL_ENDIAN end);
 
 /*
  * @brief Initialize LSM6DSL structure and configure imu's endianess
@@ -162,8 +169,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev,
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr,
-		uint8_t imuAddr);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr, uint8_t imuAddr);
 
 /*
  * @brief Enable/Disable INT1 IRQ sources
@@ -178,8 +184,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr,
  * @note This function overwrites the INT1_CTRL reg with value of s.
  * 		 To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
-		enum LSM6DSL_INT1_Sources s);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev, enum LSM6DSL_INT1_Sources s);
 
 /*
  * @brief Enable/Disable INT2 IRQ sources
@@ -194,8 +199,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
  * @note This function overwrites the INT2_CTRL reg with value of s.
  * 	   	 To enable multiple sources the values of LSM6DSL_INT2_Sources should be ORed.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
-		enum LSM6DSL_INT2_Sources s);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev, enum LSM6DSL_INT2_Sources s);
 
 /*
  * @brief Maps IRQs on INT2 pin to INT1 pin
@@ -245,8 +249,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m);
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
-		enum LSM6DSL_XL_FS_Range r);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev, enum LSM6DSL_XL_FS_Range r);
 
 /*
  * @brief Checks if accelerometer data is available
@@ -271,8 +274,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isAccelDataAvailabe(LSM6DSL *dev);
  *
  * @see Table 12 & 13 of AN5040 for number of samples to discard.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
-		enum LSM6DSL_XL_G_HM_MODE m);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_G_HM_MODE m);
 
 /*
  * @brief Read accelerometer
@@ -285,6 +287,25 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl);
+
+/*
+ * @brief Performs acceleromter self test
+ *
+ * @attention device must be kept still during self test
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ *
+ * @note This function modifies the Accel and Gyro settings.
+ * 		 Overwrites the registers CTRL1_XX(10h) to CTRL10_XX(19).
+ * 		 Therefore, use it at startup prior to initialization.
+ *
+ * @see Figure 36 of AN5040 for the self procedure
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev);
 
 /*
  * @brief Sets Gyros ODR
@@ -310,8 +331,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m);
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
-		enum LSM6DSL_G_FS_Range r);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev, enum LSM6DSL_G_FS_Range r);
 
 /*
  * @brief Checks if gyroscope data is available
@@ -336,8 +356,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev);
  *
  * @see Table 14, 15 & 16 of AN5040 for number of samples to discard.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
-		enum LSM6DSL_XL_G_HM_MODE m);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_G_HM_MODE m);
 
 /*
  * @brief Read gyroscope

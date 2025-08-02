@@ -9,8 +9,9 @@
 #include "lsm6dsl.h"
 #include "lsm6dsl_port.h"
 
-static LSM6DSL_INTF_RET_TYPE LSM6DSL_ModifyReg(LSM6DSL *dev, uint8_t regAddr,
-		uint8_t *val)
+const int16_t MIN_ST = 90, MAX_ST = 1700;
+
+static LSM6DSL_INTF_RET_TYPE LSM6DSL_ModifyReg(LSM6DSL *dev, uint8_t regAddr, uint8_t *val)
 {
 	if (dev != NULL && val != NULL)
 	{
@@ -43,8 +44,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev,
-		enum LSM6DSL_ENDIAN end)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev, enum LSM6DSL_ENDIAN end)
 {
 	if (dev != NULL)
 	{
@@ -74,8 +74,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr,
-		uint8_t imuAddr)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr, uint8_t imuAddr)
 {
 	if (dev != NULL && interfacePtr != NULL)
 	{
@@ -201,8 +200,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
-		enum LSM6DSL_XL_FS_Range r)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev, enum LSM6DSL_XL_FS_Range r)
 {
 	if (dev != NULL)
 	{
@@ -232,8 +230,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
-		enum LSM6DSL_G_FS_Range r)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev, enum LSM6DSL_G_FS_Range r)
 {
 	if (dev != NULL)
 	{
@@ -268,8 +265,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
-		enum LSM6DSL_XL_G_HM_MODE m)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_G_HM_MODE m)
 {
 	if (dev != NULL)
 	{
@@ -289,8 +285,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
-		enum LSM6DSL_XL_G_HM_MODE m)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_G_HM_MODE m)
 {
 	if (dev != NULL)
 	{
@@ -340,8 +335,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
-		enum LSM6DSL_INT1_Sources s)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev, enum LSM6DSL_INT1_Sources s)
 {
 	if (dev != NULL)
 	{
@@ -353,8 +347,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev,
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev,
-		enum LSM6DSL_INT2_Sources s)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev, enum LSM6DSL_INT2_Sources s)
 {
 	if (dev != NULL)
 	{
@@ -426,7 +419,97 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 {
 	if (dev != NULL)
 	{
+		// the test procedure is described in figure 36 of AN5040
+		LSM6DSL_AccelData currentAccel, StAccel, noStAccel;
+		uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00 };
 
+		if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, ptr,
+				10) == LSM6DSL_INTF_RET_TYPE_FAILURE)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+		dev->delayMs(dev->hInterface, 100);
+
+		memset((void*) &noStAccel, 0, sizeof(noStAccel));
+		// self test disable
+		for (uint8_t i = 0; i <= 5; i++)
+		{
+			if (LSM6DSL_isAccelDataAvailabe(
+					dev) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// discard the first sample
+				if (i == 0)
+				{
+					LSM6DSL_readAccelData(dev, &currentAccel);
+					continue;
+				}
+
+				LSM6DSL_readAccelData(dev, &currentAccel);
+				// average 5 samples
+				noStAccel.accel_x += currentAccel.accel_x / 5;
+				noStAccel.accel_y += currentAccel.accel_y / 5;
+				noStAccel.accel_z += currentAccel.accel_z / 5;
+			}
+		}
+
+		// self test enable
+		uint8_t st = 0x01;
+		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+				&st) == LSM6DSL_INTF_RET_TYPE_FAILURE)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+		dev->delayMs(dev->hInterface, 100);
+		memset((void*) &StAccel, 0, sizeof(StAccel));
+
+		for (uint8_t i = 0; i <= 5; i++)
+		{
+			if (LSM6DSL_isAccelDataAvailabe(
+					dev) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			{
+				// discard the first sample
+				if (i == 0)
+				{
+					LSM6DSL_readAccelData(dev, &currentAccel);
+					continue;
+				}
+
+				LSM6DSL_readAccelData(dev, &currentAccel);
+				// average 5 samples
+				StAccel.accel_x += currentAccel.accel_x / 5;
+				StAccel.accel_y += currentAccel.accel_y / 5;
+				StAccel.accel_z += currentAccel.accel_z / 5;
+			}
+		}
+
+		// store the difference between the value of x, y and z with and without self test
+		currentAccel.accel_x = ((StAccel.accel_x - noStAccel.accel_x)
+				* LSM6DSL_XL_FS_4G_SENS) / 1000;
+		currentAccel.accel_y = ((StAccel.accel_y - noStAccel.accel_y)
+				* LSM6DSL_XL_FS_4G_SENS) / 1000;
+		currentAccel.accel_z = ((StAccel.accel_z - noStAccel.accel_z)
+				* LSM6DSL_XL_FS_4G_SENS) / 1000;
+
+		if (abs(currentAccel.accel_x) >= abs(MIN_ST)
+				&& abs(currentAccel.accel_x) <= abs(MAX_ST)
+				&& abs(currentAccel.accel_y) >= abs(MIN_ST)
+				&& abs(currentAccel.accel_y) <= abs(MAX_ST)
+				&& abs(currentAccel.accel_z) >= abs(MIN_ST)
+				&& abs(currentAccel.accel_z) <= abs(MAX_ST))
+		{
+			// disable self test and accelerometer
+			st = 0x00;
+			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL1_XL,
+							&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			else
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+		}
+
+		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL1_XL,
+						&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
