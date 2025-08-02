@@ -35,11 +35,11 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev,
 		{
 			switch (end)
 			{
-			case LITTLE_ENDIAN:
+			case LSM6DSL_LITTLE_ENDIAN:
 				t &= ~BLE;
 				break;
 
-			case BIG_ENDIAN:
+			case LSM6DSL_BIG_ENDIAN:
 				t |= BLE;
 				break;
 
@@ -114,19 +114,19 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 			t &= 0x0F;	// clear the ODR_XLn bits
 			switch (m)
 			{
-			case XL_ODR_POWER_DOWN:
+			case LSM6DSL_XL_ODR_POWER_DOWN:
 				break;
-			case XL_ODR_12_5Hz:
-			case XL_ODR_26Hz:
-			case XL_ODR_52Hz:
-			case XL_ODR_104Hz:
-			case XL_ODR_208Hz:
-			case XL_ODR_416Hz:
-			case XL_ODR_833Hz:
-			case XL_ODR_1_66kHz:
-			case XL_ODR_3_33kHz:
-			case XL_ODR_6_66kHz:
-			case XL_ODR_1_6Hz:
+			case LSM6DSL_XL_ODR_12_5Hz:
+			case LSM6DSL_XL_ODR_26Hz:
+			case LSM6DSL_XL_ODR_52Hz:
+			case LSM6DSL_XL_ODR_104Hz:
+			case LSM6DSL_XL_ODR_208Hz:
+			case LSM6DSL_XL_ODR_416Hz:
+			case LSM6DSL_XL_ODR_833Hz:
+			case LSM6DSL_XL_ODR_1_66kHz:
+			case LSM6DSL_XL_ODR_3_33kHz:
+			case LSM6DSL_XL_ODR_6_66kHz:
+			case LSM6DSL_XL_ODR_1_6Hz:
 				t |= (m << ODR_XL0_Pos );
 				break;
 
@@ -175,18 +175,18 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 			t &= 0x0E;	// clear the ODR_Gn bits
 			switch (m)
 			{
-			case G_ODR_POWER_DOWN:
+			case LSM6DSL_G_ODR_POWER_DOWN:
 				break;
-			case G_ODR_12_5Hz:
-			case G_ODR_26Hz:
-			case G_ODR_52Hz:
-			case G_ODR_104Hz:
-			case G_ODR_208Hz:
-			case G_ODR_416Hz:
-			case G_ODR_833Hz:
-			case G_ODR_1_66kHz:
-			case G_ODR_3_33kHz:
-			case G_ODR_6_66kHz:
+			case LSM6DSL_G_ODR_12_5Hz:
+			case LSM6DSL_G_ODR_26Hz:
+			case LSM6DSL_G_ODR_52Hz:
+			case LSM6DSL_G_ODR_104Hz:
+			case LSM6DSL_G_ODR_208Hz:
+			case LSM6DSL_G_ODR_416Hz:
+			case LSM6DSL_G_ODR_833Hz:
+			case LSM6DSL_G_ODR_1_66kHz:
+			case LSM6DSL_G_ODR_3_33kHz:
+			case LSM6DSL_G_ODR_6_66kHz:
 				t |= (m << ODR_G0_Pos );
 				break;
 
@@ -222,11 +222,11 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev,
 			t &= 0xF3;	// clear the FS_XLn bits
 			switch (r)
 			{
-			case XL_FS_2G:
+			case LSM6DSL_XL_FS_2G:
 				break;
-			case XL_FS_4G:
-			case XL_FS_8G:
-			case XL_FS_16G:
+			case LSM6DSL_XL_FS_4G:
+			case LSM6DSL_XL_FS_8G:
+			case LSM6DSL_XL_FS_16G:
 				t |= (r << FS_XL0_Pos );
 				break;
 			default:
@@ -260,15 +260,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev,
 			t &= 0xF0;	// clear the FS_Gn and FS_G125 bits
 			switch (r)
 			{
-			case G_FS_250DPS:
+			case LSM6DSL_G_FS_250DPS:
 				break;
-			case G_FS_500DPS:
-			case G_FS_1000DPS:
-			case G_FS_2000DPS:
+			case LSM6DSL_G_FS_500DPS:
+			case LSM6DSL_G_FS_1000DPS:
+			case LSM6DSL_G_FS_2000DPS:
 				t |= (r << FS_G0_Pos );
 				break;
 
-			case G_FS_125DPS:
+			case LSM6DSL_G_FS_125DPS:
 				t |= FS_125;
 				break;
 			default:
@@ -300,7 +300,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev,
 		if (dev->read(dev->hInterface, dev->chipAddr, CTRL6_C, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			if (XL_G_HM_MODE_ON)
+			if (LSM6DSL_XL_G_HM_MODE_ON)
 				t &= ~XL_HM_MODE;
 			else
 				t |= XL_HM_MODE;
@@ -328,7 +328,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev,
 		if (dev->read(dev->hInterface, dev->chipAddr, CTRL7_G, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			if (XL_G_HM_MODE_ON)
+			if (LSM6DSL_XL_G_HM_MODE_ON)
 				t &= ~G_HM_MODE;
 			else
 				t |= G_HM_MODE;
@@ -446,7 +446,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, AccelData *xl)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl)
 {
 	if (dev != NULL && xl != NULL)
 	{
@@ -464,7 +464,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, AccelData *xl)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, GyroData *gy)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroData *gy)
 {
 	if (dev != NULL && gy != NULL)
 	{
