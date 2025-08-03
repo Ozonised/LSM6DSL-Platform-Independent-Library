@@ -85,6 +85,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_Init(LSM6DSL *dev, void *interfacePtr, uint8_t imu
 		dev->read = LSM6DSL_PortI2CReadReg;
 		dev->write = LSM6DSL_PortI2CWriteReg;
 		dev->delayMs = LSM6DSL_PortDelayMs;
+
+		return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 	}
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -612,6 +614,23 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL2_G,
 						&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readTemperature(LSM6DSL *dev, LSM6DSL_TempData *t)
+{
+	if (dev != NULL && t != NULL)
+	{
+		uint8_t buf[2];
+		if (dev->read(dev->hInterface, dev->chipAddr, OUT_TEMP_L, buf,
+				2) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			t->regData = buf[1] << 8 | buf[0];
+			// 1 degree celsius = 256 LSB
+			t->celsius = 25.0 + t->regData / 256;
+			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }

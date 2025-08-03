@@ -144,6 +144,12 @@ enum LSM6DSL_ENDIAN
 	LSM6DSL_LITTLE_ENDIAN = 0, LSM6DSL_BIG_ENDIAN
 };
 
+typedef struct
+{
+	float celsius;
+	int16_t regData;
+} LSM6DSL_TempData;
+
 /*
  * @brief Checks if the LSM6DSL is present on the bus
  *
@@ -410,5 +416,17 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev);
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE unavailable, error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev);
+
+/*
+ * @brief Read temperature data
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[out] t Pointer to LSM6DSL_TempData structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readTemperature(LSM6DSL *dev, LSM6DSL_TempData *t);
 
 #endif /* LSM6DSL_LSM6DSL_H_ */
