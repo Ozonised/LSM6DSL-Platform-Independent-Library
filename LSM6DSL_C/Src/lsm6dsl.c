@@ -9,7 +9,9 @@
 #include "lsm6dsl.h"
 #include "lsm6dsl_port.h"
 
-const int16_t MIN_ST = 90, MAX_ST = 1700;
+const int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
+const uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
+		MAX_ST_G_250FS = 80000, MAX_ST_G_2000FS = 700000;
 
 static LSM6DSL_INTF_RET_TYPE LSM6DSL_ModifyReg(LSM6DSL *dev, uint8_t regAddr, uint8_t *val)
 {
@@ -434,22 +436,22 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 		// self test disable
 		for (uint8_t i = 0; i <= 5; i++)
 		{
-			if (LSM6DSL_isAccelDataAvailabe(
-					dev) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
-			{
-				// discard the first sample
-				if (i == 0)
-				{
-					LSM6DSL_readAccelData(dev, &currentAccel);
-					continue;
-				}
+			while (LSM6DSL_isAccelDataAvailabe(dev)
+					!= LSM6DSL_INTF_RET_TYPE_SUCCESS);
 
+			// discard the first sample
+			if (i == 0)
+			{
 				LSM6DSL_readAccelData(dev, &currentAccel);
-				// average 5 samples
-				noStAccel.accel_x += currentAccel.accel_x / 5;
-				noStAccel.accel_y += currentAccel.accel_y / 5;
-				noStAccel.accel_z += currentAccel.accel_z / 5;
+				continue;
 			}
+
+			LSM6DSL_readAccelData(dev, &currentAccel);
+			// average 5 samples
+			noStAccel.accel_x += currentAccel.accel_x / 5;
+			noStAccel.accel_y += currentAccel.accel_y / 5;
+			noStAccel.accel_z += currentAccel.accel_z / 5;
+
 		}
 
 		// self test enable
@@ -463,22 +465,22 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 
 		for (uint8_t i = 0; i <= 5; i++)
 		{
-			if (LSM6DSL_isAccelDataAvailabe(
-					dev) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
-			{
-				// discard the first sample
-				if (i == 0)
-				{
-					LSM6DSL_readAccelData(dev, &currentAccel);
-					continue;
-				}
+			while (LSM6DSL_isAccelDataAvailabe(dev)
+					!= LSM6DSL_INTF_RET_TYPE_SUCCESS);
 
+			// discard the first sample
+			if (i == 0)
+			{
 				LSM6DSL_readAccelData(dev, &currentAccel);
-				// average 5 samples
-				StAccel.accel_x += currentAccel.accel_x / 5;
-				StAccel.accel_y += currentAccel.accel_y / 5;
-				StAccel.accel_z += currentAccel.accel_z / 5;
+				continue;
 			}
+
+			LSM6DSL_readAccelData(dev, &currentAccel);
+			// average 5 samples
+			StAccel.accel_x += currentAccel.accel_x / 5;
+			StAccel.accel_y += currentAccel.accel_y / 5;
+			StAccel.accel_z += currentAccel.accel_z / 5;
+
 		}
 
 		// store the difference between the value of x, y and z with and without self test
@@ -489,15 +491,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 		currentAccel.accel_z = ((StAccel.accel_z - noStAccel.accel_z)
 				* LSM6DSL_XL_FS_4G_SENS) / 1000;
 
-		if (abs(currentAccel.accel_x) >= abs(MIN_ST)
-				&& abs(currentAccel.accel_x) <= abs(MAX_ST)
-				&& abs(currentAccel.accel_y) >= abs(MIN_ST)
-				&& abs(currentAccel.accel_y) <= abs(MAX_ST)
-				&& abs(currentAccel.accel_z) >= abs(MIN_ST)
-				&& abs(currentAccel.accel_z) <= abs(MAX_ST))
+		st = 0x00;
+		if (abs(currentAccel.accel_x) >= abs(MIN_ST_XL)
+				&& abs(currentAccel.accel_x) <= abs(MAX_ST_XL)
+				&& abs(currentAccel.accel_y) >= abs(MIN_ST_XL)
+				&& abs(currentAccel.accel_y) <= abs(MAX_ST_XL)
+				&& abs(currentAccel.accel_z) >= abs(MIN_ST_XL)
+				&& abs(currentAccel.accel_z) <= abs(MAX_ST_XL))
 		{
 			// disable self test and accelerometer
-			st = 0x00;
 			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
 					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL1_XL,
 							&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
@@ -508,6 +510,106 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 
 		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
 				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL1_XL,
+						&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
+{
+	if (dev != NULL)
+	{
+		// the test procedure is described in figure 37 of AN5040
+		LSM6DSL_GyroData currentGyro, StGyro, noStGyro;
+		long gyroX, gyroY, gyroZ;
+		uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00 };
+
+		if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, ptr,
+				10) == LSM6DSL_INTF_RET_TYPE_FAILURE)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+		dev->delayMs(dev->hInterface, 150);
+
+		memset((void*) &noStGyro, 0, sizeof(noStGyro));
+		// self test disable
+		for (uint8_t i = 0; i <= 5; i++)
+		{
+			while (LSM6DSL_isGyroDataAvailabe(dev)
+					!= LSM6DSL_INTF_RET_TYPE_SUCCESS);
+
+			// discard the first sample
+			if (i == 0)
+			{
+				LSM6DSL_readGyroData(dev, &currentGyro);
+				continue;
+			}
+
+			LSM6DSL_readGyroData(dev, &currentGyro);
+			// average 5 samples
+			noStGyro.gyro_x += currentGyro.gyro_x / 5;
+			noStGyro.gyro_y += currentGyro.gyro_y / 5;
+			noStGyro.gyro_z += currentGyro.gyro_z / 5;
+
+		}
+
+		// self test enable
+		uint8_t st = 0x04;
+		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+				&st) == LSM6DSL_INTF_RET_TYPE_FAILURE)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+		dev->delayMs(dev->hInterface, 50);
+		memset((void*) &StGyro, 0, sizeof(StGyro));
+
+		for (uint8_t i = 0; i <= 5; i++)
+		{
+			while (LSM6DSL_isGyroDataAvailabe(dev)
+					!= LSM6DSL_INTF_RET_TYPE_SUCCESS);
+
+			// discard the first sample
+			if (i == 0)
+			{
+				LSM6DSL_readGyroData(dev, &currentGyro);
+				continue;
+			}
+
+			LSM6DSL_readGyroData(dev, &currentGyro);
+			// average 5 samples
+			StGyro.gyro_x += currentGyro.gyro_x / 5;
+			StGyro.gyro_y += currentGyro.gyro_y / 5;
+			StGyro.gyro_z += currentGyro.gyro_z / 5;
+
+		}
+
+		// store the difference between the value of x, y and z with and without self test
+		gyroX = (long) ((StGyro.gyro_x - noStGyro.gyro_x)
+				* LSM6DSL_G_FS_250_SENS) / 1000;
+		gyroY = (long) ((StGyro.gyro_y - noStGyro.gyro_y)
+				* LSM6DSL_G_FS_250_SENS) / 1000;
+		gyroZ = (long) ((StGyro.gyro_z - noStGyro.gyro_z)
+				* LSM6DSL_G_FS_250_SENS) / 1000;
+		st = 0x00;
+		if (abs(gyroX) >= abs(MIN_ST_G_250FS)
+				&& abs(gyroX) <= abs(MAX_ST_G_250FS)
+				&& abs(gyroY) >= abs(MIN_ST_G_250FS)
+				&& abs(gyroY) <= abs(MAX_ST_G_250FS)
+				&& abs(gyroZ) >= abs(MIN_ST_G_250FS)
+				&& abs(gyroZ) <= abs(MAX_ST_G_250FS))
+		{
+			// disable self test and accelerometer
+
+			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL2_G,
+							&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			else
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+		}
+
+		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL2_G,
 						&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 	}

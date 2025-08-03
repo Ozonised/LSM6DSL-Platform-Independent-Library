@@ -37,6 +37,7 @@ enum LSM6DSL_XL_FS_Range
 
 enum LSM6DSL_XL_FS_Sensitivity
 {
+	// divide the values by 1000 to get the actual value as in the datasheet
 	LSM6DSL_XL_FS_2G_SENS = 61,
 	LSM6DSL_XL_FS_4G_SENS = 122,
 	LSM6DSL_XL_FS_8G_SENS = 244,
@@ -71,6 +72,16 @@ enum LSM6DSL_G_FS_Range
 	LSM6DSL_G_FS_1000DPS,
 	LSM6DSL_G_FS_2000DPS,
 	LSM6DSL_G_FS_125DPS
+};
+
+enum LSM6DSL_G_FS_Sensitivity
+{
+	// divide the values by 1000 to get the actual value as in the datasheet
+	LSM6DSL_G_FS_125_SENS = 4375,
+	LSM6DSL_G_FS_250_SENS = 8750,
+	LSM6DSL_G_FS_500_SENS = 17500,
+	LSM6DSL_G_FS_1000_SENS = 35000,
+	LSM6DSL_G_FS_2000_SENS = 70000
 };
 
 enum LSM6DSL_G_ODR
@@ -369,6 +380,25 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroData *gy);
+
+/*
+ * @brief Performs gyroscope self test
+ *
+ * @attention device must be kept still during self test
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ *
+ * @note This function modifies the Accel and Gyro settings.
+ * 		 Overwrites the registers CTRL1_XX(10h) to CTRL10_XX(19).
+ * 		 Therefore, use it at startup prior to initialization.
+ *
+ * @see Figure 37 of AN5040 for the self procedure
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev);
 
 /*
  * @brief Checks if temperature data is available
