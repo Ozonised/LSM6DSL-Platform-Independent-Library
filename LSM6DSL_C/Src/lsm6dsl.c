@@ -522,7 +522,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 	{
 		// the test procedure is described in figure 37 of AN5040
 		LSM6DSL_GyroData currentGyro, StGyro, noStGyro;
-		long gyroX, gyroY, gyroZ;
+		long deltaGyroX, deltaGyroY, deltaGyroZ;
 		uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
 
@@ -584,19 +584,19 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 		}
 
 		// store the difference between the value of x, y and z with and without self test
-		gyroX = (long) ((StGyro.gyro_x - noStGyro.gyro_x)
+		deltaGyroX = (long) ((StGyro.gyro_x - noStGyro.gyro_x)
 				* LSM6DSL_G_FS_250_SENS) / 1000;
-		gyroY = (long) ((StGyro.gyro_y - noStGyro.gyro_y)
+		deltaGyroY = (long) ((StGyro.gyro_y - noStGyro.gyro_y)
 				* LSM6DSL_G_FS_250_SENS) / 1000;
-		gyroZ = (long) ((StGyro.gyro_z - noStGyro.gyro_z)
+		deltaGyroZ = (long) ((StGyro.gyro_z - noStGyro.gyro_z)
 				* LSM6DSL_G_FS_250_SENS) / 1000;
 		st = 0x00;
-		if (abs(gyroX) >= abs(MIN_ST_G_250FS)
-				&& abs(gyroX) <= abs(MAX_ST_G_250FS)
-				&& abs(gyroY) >= abs(MIN_ST_G_250FS)
-				&& abs(gyroY) <= abs(MAX_ST_G_250FS)
-				&& abs(gyroZ) >= abs(MIN_ST_G_250FS)
-				&& abs(gyroZ) <= abs(MAX_ST_G_250FS))
+		if (abs(deltaGyroX) >= abs(MIN_ST_G_250FS)
+				&& abs(deltaGyroX) <= abs(MAX_ST_G_250FS)
+				&& abs(deltaGyroY) >= abs(MIN_ST_G_250FS)
+				&& abs(deltaGyroY) <= abs(MAX_ST_G_250FS)
+				&& abs(deltaGyroZ) >= abs(MIN_ST_G_250FS)
+				&& abs(deltaGyroZ) <= abs(MAX_ST_G_250FS))
 		{
 			// disable self test and accelerometer
 
