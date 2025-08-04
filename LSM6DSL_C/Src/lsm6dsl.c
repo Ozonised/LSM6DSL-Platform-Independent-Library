@@ -600,8 +600,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 				&& abs(deltaGyroZ) >= abs(MIN_ST_G_250FS)
 				&& abs(deltaGyroZ) <= abs(MAX_ST_G_250FS))
 		{
-			// disable self test and accelerometer
-
+			// disable self test and gyroscope
 			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
 					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL2_G,
 							&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
@@ -630,6 +629,115 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readTemperature(LSM6DSL *dev, LSM6DSL_TempData *t)
 			// 1 degree celsius = 256 LSB
 			t->celsius = 25.0 + t->regData / 256;
 			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m)
+{
+	if (dev != NULL)
+	{
+		uint8_t t;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		{
+			if (m)
+				t |= BW0_XL;
+			else
+				t &= ~BW0_XL;
+
+			return LSM6DSL_ModifyReg(dev, CTRL1_XL, &t);
+		}
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_ODR odr, uint8_t LNLL)
+{
+	if (dev != NULL)
+	{
+		uint8_t ctrl8_xl, ctrl1_xl;
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL8_XL, &ctrl8_xl,
+				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+		if (LNLL)
+			ctrl8_xl |= INPUT_COMPOSITE; // low noise
+		else
+			ctrl8_xl &= ~INPUT_COMPOSITE; // low latency
+
+		// disable high pass path
+		ctrl8_xl &= ~HP_SLOPE_XL_EN;
+		if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+				&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+		switch (odr)
+		{
+		case LSM6DSL_XL_LPF_ODR_2:
+		case LSM6DSL_XL_LPF_ODR_4:
+
+			// disable LPF2 path
+			ctrl8_xl &= ~(LPF2_XL_EN );
+			if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+					&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+			if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &ctrl1_xl,
+					1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+			if (odr == LSM6DSL_XL_LPF_ODR_4)
+				ctrl1_xl |= LPF1_BW_SEL;
+			else
+				ctrl1_xl &= ~(LPF1_BW_SEL );
+
+			if (LSM6DSL_ModifyReg(dev, CTRL1_XL,
+					&ctrl1_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+			break;
+
+		case LSM6DSL_XL_LPF_ODR_50:
+
+			ctrl8_xl |= LPF2_XL_EN;
+			ctrl8_xl &= (HPCF_XL0 | HPCF_XL0 );
+
+			if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+					&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+			break;
+
+		case LSM6DSL_XL_LPF_ODR_100:
+			ctrl8_xl |= LPF2_XL_EN | HPCF_XL0;
+			ctrl8_xl &= (HPCF_XL1 );
+
+			if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+					&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+			break;
+
+		case LSM6DSL_XL_LPF_ODR_9:
+			ctrl8_xl |= LPF2_XL_EN | HPCF_XL1;
+			ctrl8_xl &= (HPCF_XL0 );
+
+			if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+					&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+			break;
+
+		case LSM6DSL_XL_LPF_ODR_400:
+			ctrl8_xl |= LPF2_XL_EN | HPCF_XL1 | HPCF_XL0;
+
+			if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+					&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+				return LSM6DSL_INTF_RET_TYPE_FAILURE;
+			break;
+		default:
+			// incorrect value
+			return LSM6DSL_INTF_RET_TYPE_FAILURE;
+			break;
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;

@@ -60,6 +60,16 @@ enum LSM6DSL_XL_ODR
 	LSM6DSL_XL_ODR_1_6Hz
 };
 
+enum LSM6DSL_XL_LPF_ODR
+{
+	LSM6DSL_XL_LPF_ODR_2 = 0,
+	LSM6DSL_XL_LPF_ODR_4,
+	LSM6DSL_XL_LPF_ODR_50,
+	LSM6DSL_XL_LPF_ODR_100,
+	LSM6DSL_XL_LPF_ODR_9,
+	LSM6DSL_XL_LPF_ODR_400,
+};
+
 enum LSM6DSL_XL_G_HM_MODE
 {
 	LSM6DSL_XL_G_HM_MODE_ON = 0, LSM6DSL_XL_G_HM_MODE_OFF
@@ -323,6 +333,33 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl)
  * @see Figure 36 of AN5040 for the self procedure
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev);
+
+/*
+ * @brief Set accelerometer analog chain bandwidth for ODR >= 1.67kHz
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] m 0 for 1.5kHZ BW, 1 for 400Hz BW
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
+
+/*
+ * @brief Set accelerometer analog chain bandwidth for ODR >= 1.67kHz
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] odr one of LSM6DSL_XL_LPF_ODR values
+ * @param[in] LNLL input composite value, 1 = low noise & 0 = low latency
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ *
+ * @see table 9 of AN5040 for samples to discard, alternatively use LSM6DSL_setDRDYMask();
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_ODR odr, uint8_t LNLL);
 
 /*
  * @brief Sets Gyros ODR
