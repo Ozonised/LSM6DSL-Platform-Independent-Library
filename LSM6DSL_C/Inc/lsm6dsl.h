@@ -70,6 +70,14 @@ enum LSM6DSL_XL_LPF_ODR
 	LSM6DSL_XL_LPF_ODR_400,
 };
 
+enum LSM6DSL_XL_HPF_ODR
+{
+	LSM6DSL_XL_HPF_ODR_4 = 0,
+	LSM6DSL_XL_HPF_ODR_100,
+	LSM6DSL_XL_HPF_ODR_9,
+	LSM6DSL_XL_HPF_ODR_400,
+};
+
 enum LSM6DSL_XL_G_HM_MODE
 {
 	LSM6DSL_XL_G_HM_MODE_ON = 0, LSM6DSL_XL_G_HM_MODE_OFF
@@ -253,6 +261,20 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en);
 LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m);
 
 /*
+ * @brief Enable/Disable data ready (DRDY) mask functionality
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] m 1 to enable, 0 to disable
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ *
+ * @note Data ready mask only works for accelerometer LPF1 and gyroscope's LPF2 digital filters.
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleDataReadyMask(LSM6DSL *dev, uint8_t m);
+
+/*
  * @brief Sets Accelerometers ODR
  *
  * @param[in] dev Pointer to the LSM6DSL structure
@@ -347,7 +369,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev);
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
 
 /*
- * @brief Set accelerometer analog chain bandwidth for ODR >= 1.67kHz
+ * @brief Configure accelerometer digital low pass filter
  *
  * @param[in] dev Pointer to the LSM6DSL structure
  * @param[in] odr one of LSM6DSL_XL_LPF_ODR values
@@ -357,9 +379,23 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
  *
- * @see table 9 of AN5040 for samples to discard, alternatively use LSM6DSL_setDRDYMask();
+ * @see table 9 of AN5040 for samples to discard, alternatively use LSM6DSL_setDRDYMask() for ODR/2 & ODR/4
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_ODR odr, uint8_t LNLL);
+
+/*
+ * @brief Configure accelerometer digital high pass filter
+ *
+ * @param[in] dev Pointer to the LSM6DSL structure
+ * @param[in] odr one of LSM6DSL_XL_HPF_ODR values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ *
+ * @see table 9 of AN5040 for samples to discard
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_ODR odr);
 
 /*
  * @brief Sets Gyros ODR
