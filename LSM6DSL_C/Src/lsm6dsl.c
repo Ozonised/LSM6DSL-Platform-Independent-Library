@@ -781,7 +781,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleDataReadyMask(LSM6DSL *dev, uint8_t m)
 	if (dev != NULL)
 	{
 		uint8_t ctrl4_c;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL4_C, &ctrl8_c,
+		if (dev->read(dev->hInterface, dev->chipAddr, CTRL4_C, &ctrl4_c,
 				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
