@@ -55,6 +55,8 @@ void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)
 
 ### 1. Read acclerometer and gyroscope data
 ```C
+#include "lsm6dsl.h"
+
 #define LSM6DSL_ADDR 0x6A
 LSM6DSL imu; // create LSM6DSL object
 LSM6DSL_AccelData accel; // object to hold accelerometer data
