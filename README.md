@@ -54,6 +54,7 @@ void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)
 ## Examples:
 
 ### 1. Read acclerometer and gyroscope data
+
 ```C
 #include "lsm6dsl.h"
 
@@ -65,7 +66,7 @@ LSM6DSL_GyroData gyro;	 // object to hold gyroscope data
 	.
 	.
 wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
-LSM6DSL_Init(&imu, (void *) i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_Init(&imu, (void *) &i2cHandle, LSM6DSL_ADDR);	// initialise the struct
 LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
 LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
 LSM6DSL_setGyroFSRange(&imu, LSM6DSL_G_FS_500DPS);	// set the gyroscope full scale range
@@ -98,7 +99,7 @@ LSM6DSL_TempData t;	// object to hold temperature data
 	.
 	.
 wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
-LSM6DSL_Init(&imu, (void *) i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_Init(&imu, (void *) &i2cHandle, LSM6DSL_ADDR);	// initialise the struct
 LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
 LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
 	.
