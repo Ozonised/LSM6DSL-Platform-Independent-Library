@@ -338,7 +338,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL
 LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl);
 
 /*
- * @brief Performs acceleromter self test
+ * @brief Performs accelerometer self test
  *
  * @attention device must be kept still during self test
  *
