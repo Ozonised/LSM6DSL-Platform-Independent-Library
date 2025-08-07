@@ -52,8 +52,10 @@ void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)
 }
 ```
 ## Examples:
+Not all the features of this library is discussed in the example, but enough to get you started.
 
 ### 1. Read acclerometer and gyroscope data
+
 ```C
 #include "lsm6dsl.h"
 
@@ -65,7 +67,7 @@ LSM6DSL_GyroData gyro;	 // object to hold gyroscope data
 	.
 	.
 wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
-LSM6DSL_Init(&imu, (void *) i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_Init(&imu, (void *) &i2cHandle, LSM6DSL_ADDR);	// initialise the struct
 LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
 LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
 LSM6DSL_setGyroFSRange(&imu, LSM6DSL_G_FS_500DPS);	// set the gyroscope full scale range
@@ -98,7 +100,7 @@ LSM6DSL_TempData t;	// object to hold temperature data
 	.
 	.
 wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
-LSM6DSL_Init(&imu, (void *) i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_Init(&imu, (void *) &i2cHandle, LSM6DSL_ADDR);	// initialise the struct
 LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
 LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
 	.
@@ -108,5 +110,42 @@ if (LSM6DSL_isTempDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 {
 	LSM6DSL_readTemperature(&imu, &t);
 	printf("Raw data: %d, Celsius: %f\n", t.regData, t.celsius);
+}
+```
+### 3. Perform self test
+The device must be kept steady during the self test procedure.
+```C
+#include "lsm6dsl.h"
+
+#define LSM6DSL_ADDR 0x6A
+LSM6DSL imu; // create LSM6DSL object
+LSM6DSL_AccelData accel; // object to hold accelerometer data
+LSM6DSL_GyroData gyro;	 // object to hold gyroscope data
+	.
+	.
+	.
+wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
+LSM6DSL_Init(&imu, (void *) &i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
+LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
+LSM6DSL_setGyroFSRange(&imu, LSM6DSL_G_FS_500DPS);	// set the gyroscope full scale range
+LSM6DSL_setGyroODR(&imu, LSM6DSL_G_ODR_416Hz);		// set the gyroscope output data rate
+
+uint8_t xlStState, gyStState;
+xlStState = LSM6DSL_selfTestAccel(&imu);
+gyStState = LSM6DSL_selfTestGyro(&imu);
+	.
+	.
+	.
+if (xlStState == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_isAccelDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	LSM6DSL_readAccelData(&imu, &accel);
+	printf("%d,%d,%d\n", accel.x, accel.y, accel.z);
+}
+
+if (gyStState == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	LSM6DSL_readGyroData(&imu, &gyro);
+	printf("%d,%d,%d\n", gyro.x, gyro.y, gyro.z);
 }
 ```
