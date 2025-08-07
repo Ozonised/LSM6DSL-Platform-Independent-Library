@@ -391,9 +391,9 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl)
 		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_XL, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			xl->accel_x = (buf[1] << 8) | buf[0];
-			xl->accel_y = (buf[3] << 8) | buf[2];
-			xl->accel_z = (buf[5] << 8) | buf[4];
+			xl->x = (buf[1] << 8) | buf[0];
+			xl->y = (buf[3] << 8) | buf[2];
+			xl->z = (buf[5] << 8) | buf[4];
 
 			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
@@ -409,9 +409,9 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroData *gy)
 		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_G, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			gy->gyro_x = (buf[1] << 8) | buf[0];
-			gy->gyro_y = (buf[3] << 8) | buf[2];
-			gy->gyro_z = (buf[5] << 8) | buf[4];
+			gy->x = (buf[1] << 8) | buf[0];
+			gy->y = (buf[3] << 8) | buf[2];
+			gy->z = (buf[5] << 8) | buf[4];
 
 			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
@@ -450,9 +450,9 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 
 			LSM6DSL_readAccelData(dev, &currentAccel);
 			// average 5 samples
-			noStAccel.accel_x += currentAccel.accel_x / 5;
-			noStAccel.accel_y += currentAccel.accel_y / 5;
-			noStAccel.accel_z += currentAccel.accel_z / 5;
+			noStAccel.x += currentAccel.x / 5;
+			noStAccel.y += currentAccel.y / 5;
+			noStAccel.z += currentAccel.z / 5;
 
 		}
 
@@ -479,27 +479,27 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 
 			LSM6DSL_readAccelData(dev, &currentAccel);
 			// average 5 samples
-			StAccel.accel_x += currentAccel.accel_x / 5;
-			StAccel.accel_y += currentAccel.accel_y / 5;
-			StAccel.accel_z += currentAccel.accel_z / 5;
+			StAccel.x += currentAccel.x / 5;
+			StAccel.y += currentAccel.y / 5;
+			StAccel.z += currentAccel.z / 5;
 
 		}
 
 		// store the difference between the value of x, y and z with and without self test
-		currentAccel.accel_x = ((StAccel.accel_x - noStAccel.accel_x)
-				* LSM6DSL_XL_FS_4G_SENS) / 1000;
-		currentAccel.accel_y = ((StAccel.accel_y - noStAccel.accel_y)
-				* LSM6DSL_XL_FS_4G_SENS) / 1000;
-		currentAccel.accel_z = ((StAccel.accel_z - noStAccel.accel_z)
-				* LSM6DSL_XL_FS_4G_SENS) / 1000;
+		currentAccel.x = ((StAccel.x - noStAccel.x) * LSM6DSL_XL_FS_4G_SENS)
+				/ 1000;
+		currentAccel.y = ((StAccel.y - noStAccel.y) * LSM6DSL_XL_FS_4G_SENS)
+				/ 1000;
+		currentAccel.z = ((StAccel.z - noStAccel.z) * LSM6DSL_XL_FS_4G_SENS)
+				/ 1000;
 
 		st = 0x00;
-		if (abs(currentAccel.accel_x) >= abs(MIN_ST_XL)
-				&& abs(currentAccel.accel_x) <= abs(MAX_ST_XL)
-				&& abs(currentAccel.accel_y) >= abs(MIN_ST_XL)
-				&& abs(currentAccel.accel_y) <= abs(MAX_ST_XL)
-				&& abs(currentAccel.accel_z) >= abs(MIN_ST_XL)
-				&& abs(currentAccel.accel_z) <= abs(MAX_ST_XL))
+		if (abs(currentAccel.x) >= abs(MIN_ST_XL)
+				&& abs(currentAccel.x) <= abs(MAX_ST_XL)
+				&& abs(currentAccel.y) >= abs(MIN_ST_XL)
+				&& abs(currentAccel.y) <= abs(MAX_ST_XL)
+				&& abs(currentAccel.z) >= abs(MIN_ST_XL)
+				&& abs(currentAccel.z) <= abs(MAX_ST_XL))
 		{
 			// disable self test and accelerometer
 			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
@@ -550,9 +550,9 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 
 			LSM6DSL_readGyroData(dev, &currentGyro);
 			// average 5 samples
-			noStGyro.gyro_x += currentGyro.gyro_x / 5;
-			noStGyro.gyro_y += currentGyro.gyro_y / 5;
-			noStGyro.gyro_z += currentGyro.gyro_z / 5;
+			noStGyro.x += currentGyro.x / 5;
+			noStGyro.y += currentGyro.y / 5;
+			noStGyro.z += currentGyro.z / 5;
 
 		}
 
@@ -579,19 +579,19 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 
 			LSM6DSL_readGyroData(dev, &currentGyro);
 			// average 5 samples
-			StGyro.gyro_x += currentGyro.gyro_x / 5;
-			StGyro.gyro_y += currentGyro.gyro_y / 5;
-			StGyro.gyro_z += currentGyro.gyro_z / 5;
+			StGyro.x += currentGyro.x / 5;
+			StGyro.y += currentGyro.y / 5;
+			StGyro.z += currentGyro.z / 5;
 
 		}
 
 		// store the difference between the value of x, y and z with and without self test
-		deltaGyroX = (long) ((StGyro.gyro_x - noStGyro.gyro_x)
-				* LSM6DSL_G_FS_250_SENS) / 1000;
-		deltaGyroY = (long) ((StGyro.gyro_y - noStGyro.gyro_y)
-				* LSM6DSL_G_FS_250_SENS) / 1000;
-		deltaGyroZ = (long) ((StGyro.gyro_z - noStGyro.gyro_z)
-				* LSM6DSL_G_FS_250_SENS) / 1000;
+		deltaGyroX = (long) ((StGyro.x - noStGyro.x) * LSM6DSL_G_FS_250_SENS)
+				/ 1000;
+		deltaGyroY = (long) ((StGyro.y - noStGyro.y) * LSM6DSL_G_FS_250_SENS)
+				/ 1000;
+		deltaGyroZ = (long) ((StGyro.z - noStGyro.z) * LSM6DSL_G_FS_250_SENS)
+				/ 1000;
 		st = 0x00;
 		if (abs(deltaGyroX) >= abs(MIN_ST_G_250FS)
 				&& abs(deltaGyroX) <= abs(MAX_ST_G_250FS)
