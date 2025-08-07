@@ -85,3 +85,28 @@ if (LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	printf("%d,%d,%d\n", gyro.x, gyro.y, gyro.z);
 }
 ```
+### 2. Read temperature data
+To activate the temperature, either the accelerometer, gyroscope, or both must be enabled. Refer to section 9 of the application note [AN5040](/Datasheet/an5040-lsm6dsl-alwayson-3d-accelerometer-and-3d-gyroscope-stmicroelectronics.pdf) for output data rate (max 52Hz).
+
+```C
+#include "lsm6dsl.h"
+
+#define LSM6DSL_ADDR 0x6A
+LSM6DSL imu; // create LSM6DSL object
+LSM6DSL_TempData t;	// object to hold temperature data
+	.
+	.
+	.
+wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
+LSM6DSL_Init(&imu, (void *) i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
+LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
+	.
+	.
+	.
+if (LSM6DSL_isTempDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	LSM6DSL_readTemperature(&imu, &t);
+	printf("Raw data: %d, Celsius: %f\n", t.regData, t.celsius);
+}
+```
