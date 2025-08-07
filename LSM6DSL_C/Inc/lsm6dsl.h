@@ -482,11 +482,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev);
 /*
  * @brief Checks if temperature data is available
  *
+ * @attention either the accelerometer or the gyroscope must be enabled for the temperature sensor to work
+ *
  * @param[in] dev Pointer to the LSM6DSL structure
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS available
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE unavailable, error
+ *
+ * @see Refer to section 9 of the application note AN5040 for the max ODR
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev);
 
