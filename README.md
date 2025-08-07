@@ -28,7 +28,7 @@ The function are:
 Don't worry, I will show you an example.
 
 ### Porting to STM32 using ST HAL framework:
-Initialise the I2C peripheral. This will create a ```I2C_HandleTypedef hi2c```;
+Initialise the I2C peripheral. This will create a ```I2C_HandleTypedef hi2cx```;
 
 Now in the main file, create the definitions for the above function:
 
@@ -49,5 +49,37 @@ void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)
 {
 	(void) hinterface;
 	HAL_Delay(ms);
+}
+```
+## Examples:
+
+### 1. Read acclerometer and gyroscope data
+```C
+#define LSM6DSL_ADDR 0x6A
+LSM6DSL imu; // create LSM6DSL object
+LSM6DSL_AccelData accel; // object to hold accelerometer data
+LSM6DSL_GyroData gyro;	 // object to hold gyroscope data
+	.
+	.
+	.
+wait(20); 						// delay for 20 ms as the imu performs a 15ms boot up procedure
+LSM6DSL_Init(&imu, (void *) i2cHandle, LSM6DSL_ADDR);	// initialise the struct
+LSM6DSL_setAccelFSRange(&imu, LSM6DSL_XL_FS_4G);	// set the accelerometer full scale range
+LSM6DSL_setAccelODR(&imu, LSM6DSL_XL_ODR_416Hz);	// set the accelerometer output data rate
+LSM6DSL_setGyroFSRange(&imu, LSM6DSL_G_FS_500DPS);	// set the gyroscope full scale range
+LSM6DSL_setGyroODR(&imu, LSM6DSL_G_ODR_416Hz);		// set the gyroscope output data rate
+	.
+	.
+	.
+if (LSM6DSL_isAccelDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	LSM6DSL_readAccelData(&imu, &accel);
+	printf("%d,%d,%d\n", accel.x, accel.y, accel.z);
+}
+
+if (LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	LSM6DSL_readGyroData(&imu, &gyro);
+	printf("%d,%d,%d\n", gyro.x, gyro.y, gyro.z);
 }
 ```
