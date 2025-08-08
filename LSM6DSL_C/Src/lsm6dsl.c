@@ -5,9 +5,7 @@
  *      Author: farhan
  */
 
-#include "lsm6dsl_reg.h"
 #include "lsm6dsl.h"
-#include "lsm6dsl_port.h"
 
 const int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
 const uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
@@ -36,10 +34,10 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_IsPresent(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, WHO_AM_I, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_WHO_AM_I, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			if (t == WHO_AM_I_VAL)
+			if (t == LSM6DSL_WHO_AM_I_VAL)
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
@@ -51,17 +49,17 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev, enum LSM6DSL_ENDI
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL3_C, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL3_C, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			switch (end)
 			{
 			case LSM6DSL_LITTLE_ENDIAN:
-				t &= ~BLE;
+				t &= ~LSM6DSL_BLE;
 				break;
 
 			case LSM6DSL_BIG_ENDIAN:
-				t |= BLE;
+				t |= LSM6DSL_BLE;
 				break;
 
 			default:
@@ -70,7 +68,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setBigLittleEndian(LSM6DSL *dev, enum LSM6DSL_ENDI
 				break;
 			}
 
-			return LSM6DSL_ModifyReg(dev, CTRL3_C, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL3_C, &t);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -97,15 +95,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAllIRQonINT1(LSM6DSL *dev, uint8_t en)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL4_C, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL4_C, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			if (en)
-				t |= INT2_on_INT1;
+				t |= LSM6DSL_INT2_on_INT1;
 			else
-				t &= ~INT2_on_INT1;
+				t &= ~LSM6DSL_INT2_on_INT1;
 
-			return LSM6DSL_ModifyReg(dev, CTRL4_C, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL4_C, &t);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -116,7 +114,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL1_XL, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			t &= 0x0F;	// clear the ODR_XLn bits
@@ -135,7 +133,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 			case LSM6DSL_XL_ODR_3_33kHz:
 			case LSM6DSL_XL_ODR_6_66kHz:
 			case LSM6DSL_XL_ODR_1_6Hz:
-				t |= (m << ODR_XL0_Pos );
+				t |= (m << LSM6DSL_ODR_XL0_Pos );
 				break;
 
 			default:
@@ -144,7 +142,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelODR(LSM6DSL *dev, enum LSM6DSL_XL_ODR m)
 				break;
 			}
 
-			return LSM6DSL_ModifyReg(dev, CTRL1_XL, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL1_XL, &t);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -155,10 +153,10 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isAccelDataAvailabe(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, STATUS_REG, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_STATUS_REG, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			if (t & XLDA)
+			if (t & LSM6DSL_XLDA)
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
@@ -170,7 +168,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL2_G, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			t &= 0x0E;	// clear the ODR_Gn bits
@@ -188,7 +186,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 			case LSM6DSL_G_ODR_1_66kHz:
 			case LSM6DSL_G_ODR_3_33kHz:
 			case LSM6DSL_G_ODR_6_66kHz:
-				t |= (m << ODR_G0_Pos );
+				t |= (m << LSM6DSL_ODR_G0_Pos );
 				break;
 
 			default:
@@ -197,7 +195,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroODR(LSM6DSL *dev, enum LSM6DSL_G_ODR m)
 				break;
 			}
 
-			return LSM6DSL_ModifyReg(dev, CTRL2_G, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL2_G, &t);
 		}
 	}
 
@@ -209,7 +207,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev, enum LSM6DSL_XL_FS_R
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL1_XL, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			t &= 0xF3;	// clear the FS_XLn bits
@@ -220,7 +218,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev, enum LSM6DSL_XL_FS_R
 			case LSM6DSL_XL_FS_4G:
 			case LSM6DSL_XL_FS_8G:
 			case LSM6DSL_XL_FS_16G:
-				t |= (r << FS_XL0_Pos );
+				t |= (r << LSM6DSL_FS_XL0_Pos );
 				break;
 			default:
 				// incorrect values
@@ -228,7 +226,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelFSRange(LSM6DSL *dev, enum LSM6DSL_XL_FS_R
 				break;
 			}
 
-			return LSM6DSL_ModifyReg(dev, CTRL1_XL, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL1_XL, &t);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -239,7 +237,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev, enum LSM6DSL_G_FS_Ran
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL2_G, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL2_G, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			t &= 0xF0;	// clear the FS_Gn and FS_G125 bits
@@ -250,11 +248,11 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev, enum LSM6DSL_G_FS_Ran
 			case LSM6DSL_G_FS_500DPS:
 			case LSM6DSL_G_FS_1000DPS:
 			case LSM6DSL_G_FS_2000DPS:
-				t |= (r << FS_G0_Pos );
+				t |= (r << LSM6DSL_FS_G0_Pos );
 				break;
 
 			case LSM6DSL_G_FS_125DPS:
-				t |= FS_125;
+				t |= LSM6DSL_FS_125;
 				break;
 			default:
 				// incorrect values
@@ -262,7 +260,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroFSRange(LSM6DSL *dev, enum LSM6DSL_G_FS_Ran
 				break;
 			}
 
-			return LSM6DSL_ModifyReg(dev, CTRL2_G, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL2_G, &t);
 		}
 	}
 
@@ -274,15 +272,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL6_C, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL6_C, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			if (LSM6DSL_XL_G_HM_MODE_ON)
-				t &= ~XL_HM_MODE;
+				t &= ~LSM6DSL_XL_HM_MODE;
 			else
-				t |= XL_HM_MODE;
+				t |= LSM6DSL_XL_HM_MODE;
 
-			return LSM6DSL_ModifyReg(dev, CTRL6_C, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL6_C, &t);
 		}
 
 	}
@@ -294,15 +292,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL7_G, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL7_G, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			if (LSM6DSL_XL_G_HM_MODE_ON)
-				t &= ~G_HM_MODE;
+				t &= ~LSM6DSL_G_HM_MODE;
 			else
-				t |= G_HM_MODE;
+				t |= LSM6DSL_G_HM_MODE;
 
-			return LSM6DSL_ModifyReg(dev, CTRL7_G, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL7_G, &t);
 		}
 
 	}
@@ -314,10 +312,10 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, STATUS_REG, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_STATUS_REG, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			if (t & GDA)
+			if (t & LSM6DSL_GDA)
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
@@ -329,10 +327,10 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, STATUS_REG, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_STATUS_REG, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
-			if (t & TDA)
+			if (t & LSM6DSL_TDA)
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
 	}
@@ -345,7 +343,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_INT1SourceConfig(LSM6DSL *dev, enum LSM6DSL_INT1_S
 	{
 		if (s >= 0 && s <= 255)
 		{
-			return LSM6DSL_ModifyReg(dev, INT1_CTRL, &s);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_INT1_CTRL, &s);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -357,7 +355,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_INT2SourceConfig(LSM6DSL *dev, enum LSM6DSL_INT2_S
 	{
 		if (s >= 0 && s <= 255)
 		{
-			return LSM6DSL_ModifyReg(dev, INT2_CTRL, &s);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_INT2_CTRL, &s);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -368,15 +366,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL3_C, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL3_C, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			if (m)
-				t |= BDU;
+				t |= LSM6DSL_BDU;
 			else
-				t &= ~BDU;
+				t &= ~LSM6DSL_BDU;
 
-			return LSM6DSL_ModifyReg(dev, CTRL3_C, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL3_C, &t);
 		}
 	}
 
@@ -388,7 +386,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl)
 	if (dev != NULL && xl != NULL)
 	{
 		uint8_t buf[6];
-		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_XL, buf,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_OUTX_L_XL, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			xl->x = (buf[1] << 8) | buf[0];
@@ -406,7 +404,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroData *gy)
 	if (dev != NULL && gy != NULL)
 	{
 		uint8_t buf[6];
-		if (dev->read(dev->hInterface, dev->chipAddr, OUTX_L_G, buf,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_OUTX_L_G, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			gy->x = (buf[1] << 8) | buf[0];
@@ -428,7 +426,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 		uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
 
-		if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, ptr,
+		if (dev->write(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL1_XL, ptr,
 				10) == LSM6DSL_INTF_RET_TYPE_FAILURE)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -458,7 +456,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 
 		// self test enable
 		uint8_t st = 0x01;
-		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+		if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
 				&st) == LSM6DSL_INTF_RET_TYPE_FAILURE)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -502,16 +500,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 				&& abs(currentAccel.z) <= abs(MAX_ST_XL))
 		{
 			// disable self test and accelerometer
-			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
-					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL1_XL,
+			if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
+					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL1_XL,
 							&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 			else
 				return LSM6DSL_INTF_RET_TYPE_FAILURE;
 		}
 
-		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
-				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL1_XL,
+		if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
+				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL1_XL,
 						&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 	}
@@ -528,7 +526,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 		uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
 
-		if (dev->write(dev->hInterface, dev->chipAddr, CTRL1_XL, ptr,
+		if (dev->write(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL1_XL, ptr,
 				10) == LSM6DSL_INTF_RET_TYPE_FAILURE)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -558,7 +556,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 
 		// self test enable
 		uint8_t st = 0x04;
-		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
+		if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
 				&st) == LSM6DSL_INTF_RET_TYPE_FAILURE)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -601,16 +599,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 				&& abs(deltaGyroZ) <= abs(MAX_ST_G_250FS))
 		{
 			// disable self test and gyroscope
-			if (LSM6DSL_ModifyReg(dev, CTRL5_C,
-					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL2_G,
+			if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
+					&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL2_G,
 							&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 			else
 				return LSM6DSL_INTF_RET_TYPE_FAILURE;
 		}
 
-		if (LSM6DSL_ModifyReg(dev, CTRL5_C,
-				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, CTRL2_G,
+		if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
+				&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL2_G,
 						&st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 	}
@@ -622,7 +620,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readTemperature(LSM6DSL *dev, LSM6DSL_TempData *t)
 	if (dev != NULL && t != NULL)
 	{
 		uint8_t buf[2];
-		if (dev->read(dev->hInterface, dev->chipAddr, OUT_TEMP_L, buf,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_OUT_TEMP_L, buf,
 				2) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			t->regData = buf[1] << 8 | buf[0];
@@ -639,15 +637,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m)
 	if (dev != NULL)
 	{
 		uint8_t t;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &t,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL1_XL, &t,
 				1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			if (m)
-				t |= BW0_XL;
+				t |= LSM6DSL_BW0_XL;
 			else
-				t &= ~BW0_XL;
+				t &= ~LSM6DSL_BW0_XL;
 
-			return LSM6DSL_ModifyReg(dev, CTRL1_XL, &t);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL1_XL, &t);
 		}
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -658,18 +656,18 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 	if (dev != NULL)
 	{
 		uint8_t ctrl8_xl, ctrl1_xl;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL8_XL, &ctrl8_xl,
-				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL8_XL,
+				&ctrl8_xl, 1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 		if (LNLL)
-			ctrl8_xl |= INPUT_COMPOSITE; // low noise
+			ctrl8_xl |= LSM6DSL_INPUT_COMPOSITE; // low noise
 		else
-			ctrl8_xl &= ~INPUT_COMPOSITE; // low latency
+			ctrl8_xl &= ~LSM6DSL_INPUT_COMPOSITE; // low latency
 
 		// disable high pass path
-		ctrl8_xl &= ~HP_SLOPE_XL_EN;
-		if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+		ctrl8_xl &= ~LSM6DSL_HP_SLOPE_XL_EN;
+		if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL,
 				&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -679,50 +677,50 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 		case LSM6DSL_XL_LPF_ODR_4:
 
 			// disable LPF2 path
-			ctrl8_xl &= ~(LPF2_XL_EN );
-			if (LSM6DSL_ModifyReg(dev, CTRL8_XL,
+			ctrl8_xl &= ~(LSM6DSL_LPF2_XL_EN );
+			if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL,
 					&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 				return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-			if (dev->read(dev->hInterface, dev->chipAddr, CTRL1_XL, &ctrl1_xl,
-					1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+			if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL1_XL,
+					&ctrl1_xl, 1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 				return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 			if (odr == LSM6DSL_XL_LPF_ODR_4)
-				ctrl1_xl |= LPF1_BW_SEL;
+				ctrl1_xl |= LSM6DSL_LPF1_BW_SEL;
 			else
-				ctrl1_xl &= ~(LPF1_BW_SEL );
+				ctrl1_xl &= ~(LSM6DSL_LPF1_BW_SEL );
 
-			return LSM6DSL_ModifyReg(dev, CTRL1_XL, &ctrl1_xl);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL1_XL, &ctrl1_xl);
 
 			break;
 
 		case LSM6DSL_XL_LPF_ODR_50:
 
-			ctrl8_xl |= LPF2_XL_EN;
-			ctrl8_xl &= ~(HPCF_XL1 | HPCF_XL0 );
+			ctrl8_xl |= LSM6DSL_LPF2_XL_EN;
+			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0 );
 
-			return LSM6DSL_ModifyReg(dev, CTRL8_XL, &ctrl8_xl);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
 		case LSM6DSL_XL_LPF_ODR_100:
-			ctrl8_xl |= LPF2_XL_EN | HPCF_XL0;
-			ctrl8_xl &= ~(HPCF_XL1 );
+			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL0;
+			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 );
 
-			return LSM6DSL_ModifyReg(dev, CTRL8_XL, &ctrl8_xl);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
 		case LSM6DSL_XL_LPF_ODR_9:
-			ctrl8_xl |= LPF2_XL_EN | HPCF_XL1;
-			ctrl8_xl &= ~(HPCF_XL0 );
+			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL1;
+			ctrl8_xl &= ~(LSM6DSL_HPCF_XL0 );
 
-			return LSM6DSL_ModifyReg(dev, CTRL8_XL, &ctrl8_xl);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
 		case LSM6DSL_XL_LPF_ODR_400:
-			ctrl8_xl |= LPF2_XL_EN | HPCF_XL1 | HPCF_XL0;
+			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0;
 
-			return LSM6DSL_ModifyReg(dev, CTRL8_XL, &ctrl8_xl);
+			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 		default:
 			// incorrect value
@@ -738,30 +736,30 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_X
 	if (dev != NULL)
 	{
 		uint8_t ctrl8_xl;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL8_XL, &ctrl8_xl,
-				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL8_XL,
+				&ctrl8_xl, 1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-		ctrl8_xl &= ~INPUT_COMPOSITE; // low latency
+		ctrl8_xl &= ~LSM6DSL_INPUT_COMPOSITE; // low latency
 
 		switch (odr)
 		{
 		case LSM6DSL_XL_HPF_ODR_4:
-			ctrl8_xl &= ~(HPCF_XL1 | HPCF_XL0 );
+			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0 );
 			break;
 
 		case LSM6DSL_XL_HPF_ODR_100:
-			ctrl8_xl |= (HPCF_XL0 );
-			ctrl8_xl &= ~(HPCF_XL1 );
+			ctrl8_xl |= (LSM6DSL_HPCF_XL0 );
+			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 );
 			break;
 
 		case LSM6DSL_XL_HPF_ODR_9:
-			ctrl8_xl |= (HPCF_XL1 );
-			ctrl8_xl &= ~(HPCF_XL0 );
+			ctrl8_xl |= (LSM6DSL_HPCF_XL1 );
+			ctrl8_xl &= ~(LSM6DSL_HPCF_XL0 );
 			break;
 
 		case LSM6DSL_XL_HPF_ODR_400:
-			ctrl8_xl |= (HPCF_XL0 | HPCF_XL1 );
+			ctrl8_xl |= (LSM6DSL_HPCF_XL0 | LSM6DSL_HPCF_XL1 );
 			break;
 
 		default:
@@ -770,7 +768,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_X
 			break;
 		}
 
-		return LSM6DSL_ModifyReg(dev, CTRL8_XL, &ctrl8_xl);
+		return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 	}
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -781,16 +779,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleDataReadyMask(LSM6DSL *dev, uint8_t m)
 	if (dev != NULL)
 	{
 		uint8_t ctrl4_c;
-		if (dev->read(dev->hInterface, dev->chipAddr, CTRL4_C, &ctrl4_c,
+		if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL4_C, &ctrl4_c,
 				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 		if (m)
-			ctrl4_c |= DRDY_MASK;
+			ctrl4_c |= LSM6DSL_DRDY_MASK;
 		else
-			ctrl4_c &= ~DRDY_MASK;
+			ctrl4_c &= ~LSM6DSL_DRDY_MASK;
 
-		return LSM6DSL_ModifyReg(dev, CTRL4_C, &ctrl4_c);
+		return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL4_C, &ctrl4_c);
 	}
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }

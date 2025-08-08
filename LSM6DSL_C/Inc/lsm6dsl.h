@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "lsm6dsl_port.h"
+#include "lsm6dsl_reg.h"
 
 typedef LSM6DSL_INTF_RET_TYPE (*LSM6DSL_ReadFuncPtr)(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
 
