@@ -18,19 +18,60 @@ The device has a dynamic user-selectable full-scale acceleration range of ±2/±
 Refer to [lsm6dsl.h](LSM6DSL_C/Inc/lsm6dsl.h) for all the implemented features.
 
 ## Do I use it with my favourite microcontroller?
-To use it with your favourite microcontroller, you simply need to define the 3 functions declared in [lsm6dsl_port.h](LSM6DSL_C/Inc/lsm6dsl_port.h).
+To use it with your favourite microcontroller, you simply need to define the 3 functions declared in [lsm6dsl_port.h](LSM6DSL_C/Inc/lsm6dsl_port.h) (for C) or [lsm6dsl_port.hpp](LSM6DSL_CPP/Inc/lsm6dsl_reg.hpp) (for C++).
 
-The function are:
+The functions for C are:
 1. ```LSM6DSL_INTF_RET_TYPE LSM6DSL_PortI2CReadReg(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to read the device registers.
 2. ```LSM6DSL_INTF_RET_TYPE LSM6DSL_PortI2CWriteReg(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to write to device registers.
 3. ```void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)``` : function to delay in milliseconds.
 
+The functions for C++ are:
+1. ```LSM6DSL_INTF_RET_TYPE LSM6DSL::read(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to read the device registers.
+2. ```LSM6DSL_INTF_RET_TYPE LSM6DSL::write(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to write to device registers.
+3. ```void LSM6DSL::delayMs(uint32_t ms)``` : function to delay in milliseconds.
+
 Don't worry, I will show you an example.
 
-### Porting to STM32 using ST HAL framework:
-Initialise the I2C peripheral. This will create a ```I2C_HandleTypedef hi2cx```;
+### Porting to Arduino Framework:
+To use the library with the arduino framwork, inlude the cpp files from [LSM6DSL_CPP](/LSM6DSL_CPP) into your project.
+Now, from the [lsm6dsl_port.hpp](LSM6DSL_CPP/Inc/lsm6dsl_reg.hpp) copy these function into your main file and write their definition as shown below:
 
-Now in the main file, create the definitions for the above function:
+```CPP
+LSM6DSL_INTF_RET_TYPE LSM6DSL::read(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len) {
+  TwoWire *i2c = (TwoWire *)hInterface;
+  uint8_t i = 0;
+  i2c->beginTransmission(chipAddr);
+  i2c->write(RegAddr);
+  if (i2c->endTransmission() != 0) return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+  i2c->requestFrom(chipAddr, len);
+  while (i < len) {
+    if (i2c->available()) {
+      buf[i++] = i2c->read();
+    }
+  }
+  return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL::write(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len) {
+  TwoWire *i2c = (TwoWire *)hInterface;
+  uint8_t i = 0;
+  i2c->beginTransmission(chipAddr);
+  i2c->write(RegAddr);
+  while (i < len) {
+    i2c->write(buf[i++]);
+  }
+  if (i2c->endTransmission() != 0) return LSM6DSL_INTF_RET_TYPE_FAILURE;
+  return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+}
+
+void LSM6DSL::delayMs(uint32_t ms) {
+  delay(ms);
+}
+```
+### Porting to STM32 using ST HAL framework:
+To use use the library with ST HAL's framework, include the files from [LSM6DSL_C](/LSM6DSL_C) into your project
+Now in the main file, create the definitions for the functions in [lsm6dsl_port.h](LSM6DSL_C/Inc/lsm6dsl_reg.h) as shown below:
 
 ```C
 LSM6DSL_INTF_RET_TYPE LSM6DSL_PortI2CReadReg(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)
