@@ -102,8 +102,8 @@ Not all the features of this library is discussed in the example, but enough to 
 
 #define LSM6DSL_ADDR 0x6A
 LSM6DSL imu; // create LSM6DSL object
-LSM6DSL_AccelData accel; // object to hold accelerometer data
-LSM6DSL_GyroData gyro;	 // object to hold gyroscope data
+LSM6DSL_AccelRawData accelRaw; // object to hold accelerometer's raw data
+LSM6DSL_GyroRawData gyroRaw;	 // object to hold gyroscope's raw data
 	.
 	.
 	.
@@ -118,14 +118,14 @@ LSM6DSL_setGyroODR(&imu, LSM6DSL_G_ODR_416Hz);		// set the gyroscope output data
 	.
 if (LSM6DSL_isAccelDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 {
-	LSM6DSL_readAccelData(&imu, &accel);
-	printf("%d,%d,%d\n", accel.x, accel.y, accel.z);
+	LSM6DSL_readAccelData(&imu, &accelRaw);
+	printf("%d,%d,%d\n", accelRaw.x, accelRaw.y, accelRaw.z);
 }
 
 if (LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 {
-	LSM6DSL_readGyroData(&imu, &gyro);
-	printf("%d,%d,%d\n", gyro.x, gyro.y, gyro.z);
+	LSM6DSL_readGyroData(&imu, &gyroRaw);
+	printf("%d,%d,%d\n", gyroRaw.x, gyroRaw.y, gyroRaw.z);
 }
 ```
 ### 2. Read temperature data
@@ -160,8 +160,8 @@ The device must be kept steady during the self test procedure.
 
 #define LSM6DSL_ADDR 0x6A
 LSM6DSL imu; // create LSM6DSL object
-LSM6DSL_AccelData accel; // object to hold accelerometer data
-LSM6DSL_GyroData gyro;	 // object to hold gyroscope data
+LSM6DSL_AccelData accelRaw; // object to hold accelerometer's raw data
+LSM6DSL_GyroData gyroRaw;	 // object to hold gyroscope's raw data
 	.
 	.
 	.
@@ -180,13 +180,13 @@ gyStState = LSM6DSL_selfTestGyro(&imu);
 	.
 if (xlStState == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_isAccelDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 {
-	LSM6DSL_readAccelData(&imu, &accel);
-	printf("%d,%d,%d\n", accel.x, accel.y, accel.z);
+	LSM6DSL_readAccelData(&imu, &accelRaw);
+	printf("%d,%d,%d\n", accelRaw.x, accelRaw.y, accelRaw.z);
 }
 
 if (gyStState == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 {
 	LSM6DSL_readGyroData(&imu, &gyro);
-	printf("%d,%d,%d\n", gyro.x, gyro.y, gyro.z);
+	printf("%d,%d,%d\n", gyroRaw.x, gyroRaw.y, gyroRaw.z);
 }
 ```
