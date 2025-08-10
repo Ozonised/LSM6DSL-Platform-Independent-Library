@@ -11,6 +11,11 @@ static constexpr int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
 static constexpr uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
 		MAX_ST_G_250FS = 80000, MAX_ST_G_2000FS = 700000;
 
+// sensitivity in mg/LSB
+const float LSM6DSL_XL_FS_Sensitivity[] = { 0.061, 0.122, 0.244, 0.488 };
+// sensitivity in mdps/LSB
+const float LSM6DSL_G_FS_Sensitivity[5] = { 8.75, 17.5, 35, 70, 4.375 };
+
 LSM6DSL_INTF_RET_TYPE LSM6DSL::ModifyReg(uint8_t regAddr, uint8_t *val)
 {
 	if (val != NULL)
@@ -528,10 +533,43 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readGyroData(LSM6DSL_GyroRawData *gy)
 }
 
 /*
+ * @brief Converts accelerometer raw data into meter per second squared
+ *
+ * This function converts a raw accelerometer reading from a given axis
+ * into acceleration in meters per second squared, based on the configured
+ * full-scale range.
+ *
+ * @param[in] axisN accelerometer's raw n axis value (e.g x, y or z)
+ * @param[in] r accelerometer full scale range (one of LSM6DSL_XL_FS_Range)
+ *
+ * @return float acceleration in meters per second squared
+ */
+float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r)
+{
+	return ((axisN * LSM6DSL_XL_FS_Sensitivity[r]) * 9.8) / 1000.0;
+}
+
+/*
+ * @brief Converts gyroscope raw data into degrees per second (dps)
+ *
+ * This function converts a raw gyroscope reading from a given axis
+ * into degrees per second, based on the configured
+ * full-scale range.
+ *
+ * @param[in] axisN gyroscope's raw n axis value (e.g x, y or z)
+ * @param[in] r gyroscope's full scale range (one of LSM6DSL_G_FS_Range)
+ *
+ * @return float rotation speed in degrees per second
+ */
+float convertGyroRawDataToDPS(int16_t axisN, LSM6DSL_G_FS_Range r)
+{
+	return (axisN * LSM6DSL_G_FS_Sensitivity[r]) / 1000.0;
+}
+
+/*
  * @brief Performs accelerometer self test
  *
  * @attention device must be kept still during self test
- *
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
@@ -606,11 +644,11 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 
 	// store the difference between the value of x, y and z with and without self test
 	currentAccel.x = static_cast<long>((StAccel.x - noStAccel.x)
-			* LSM6DSL_XL_FS_Sensitivity::FS_4G_SENS);
+			* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_Range::LSM6DSL_XL_FS_4G]);
 	currentAccel.y = static_cast<long>((StAccel.y - noStAccel.y)
-			* LSM6DSL_XL_FS_Sensitivity::FS_4G_SENS);
+			* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_Range::LSM6DSL_XL_FS_4G]);
 	currentAccel.z = static_cast<long>((StAccel.z - noStAccel.z)
-			* LSM6DSL_XL_FS_Sensitivity::FS_4G_SENS);
+			* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_Range::LSM6DSL_XL_FS_4G]);
 
 	st = 0x00;
 	if (std::labs(currentAccel.x) >= std::labs(MIN_ST_XL)
@@ -716,11 +754,11 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 
 	// store the difference between the value of x, y and z with and without self test
 	deltaGyroX = static_cast<long>((StGyro.x - noStGyro.x)
-			* LSM6DSL_G_FS_Sensitivity::FS_250DPS_SENS);
+			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS]);
 	deltaGyroY = static_cast<long>((StGyro.y - noStGyro.y)
-			* LSM6DSL_G_FS_Sensitivity::FS_250DPS_SENS);
+			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS]);
 	deltaGyroZ = static_cast<long>((StGyro.z - noStGyro.z)
-			* LSM6DSL_G_FS_Sensitivity::FS_250DPS_SENS);
+			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS]);
 
 	st = 0x00;
 	if (std::labs(deltaGyroX) >= std::labs(MIN_ST_G_250FS)

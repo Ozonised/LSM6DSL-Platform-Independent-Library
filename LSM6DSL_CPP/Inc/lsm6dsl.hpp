@@ -20,15 +20,6 @@ enum LSM6DSL_XL_FS_Range : uint8_t
 	LSM6DSL_XL_FS_2G = 0, LSM6DSL_XL_FS_16G, LSM6DSL_XL_FS_4G, LSM6DSL_XL_FS_8G
 };
 
-namespace LSM6DSL_XL_FS_Sensitivity
-{
-	// sensitivity in mg/LSB
-	constexpr float FS_2G_SENS = 0.061;
-	constexpr float FS_4G_SENS = 0.122;
-	constexpr float FS_8G_SENS = 0.244;
-	constexpr float FS_16G_SENS = 0.488;
-}
-
 enum LSM6DSL_XL_ODR : uint8_t
 {
 	LSM6DSL_XL_ODR_POWER_DOWN = 0,
@@ -76,16 +67,6 @@ enum LSM6DSL_G_FS_Range : uint8_t
 	LSM6DSL_G_FS_2000DPS,
 	LSM6DSL_G_FS_125DPS
 };
-
-namespace LSM6DSL_G_FS_Sensitivity
-{
-	// sensitivity in mdps/LSB
-	constexpr float FS_125DPS_SENS = 4.375;
-	constexpr float FS_250DPS_SENS = 8.75;
-	constexpr float FS_500DPS_SENS = 17.5;
-	constexpr float FS_1000DPS_SENS = 35;
-	constexpr float FS_2000DPS_SENS = 70;
-}
 
 enum LSM6DSL_G_ODR : uint8_t
 {
@@ -194,6 +175,8 @@ class LSM6DSL
 
 		LSM6DSL_INTF_RET_TYPE readAccelData(LSM6DSL_AccelRawData *xl);
 
+		LSM6DSL_INTF_RET_TYPE convertAccelRawData(LSM6DSL_AccelRawData *xl);
+
 		LSM6DSL_INTF_RET_TYPE selfTestAccel();
 
 		LSM6DSL_INTF_RET_TYPE setAccelAnalogChainBW(uint8_t m);
@@ -218,5 +201,8 @@ class LSM6DSL
 
 		LSM6DSL_INTF_RET_TYPE readTemperature(LSM6DSL_TempData *t);
 };
+
+float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r);
+float convertGyroRawDataToDPS(int16_t axisN, LSM6DSL_G_FS_Range r);
 
 #endif /* LSM6DSL_HPP_ */
