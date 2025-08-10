@@ -36,15 +36,6 @@ enum LSM6DSL_XL_FS_Range
 	LSM6DSL_XL_FS_2G = 0, LSM6DSL_XL_FS_16G, LSM6DSL_XL_FS_4G, LSM6DSL_XL_FS_8G
 };
 
-enum LSM6DSL_XL_FS_Sensitivity
-{
-	// divide the values by 1000 to get the actual value as in the datasheet
-	LSM6DSL_XL_FS_2G_SENS = 61,
-	LSM6DSL_XL_FS_4G_SENS = 122,
-	LSM6DSL_XL_FS_8G_SENS = 244,
-	LSM6DSL_XL_FS_16G_SENS = 488
-};
-
 enum LSM6DSL_XL_ODR
 {
 	LSM6DSL_XL_ODR_POWER_DOWN = 0,
@@ -91,16 +82,6 @@ enum LSM6DSL_G_FS_Range
 	LSM6DSL_G_FS_1000DPS,
 	LSM6DSL_G_FS_2000DPS,
 	LSM6DSL_G_FS_125DPS
-};
-
-enum LSM6DSL_G_FS_Sensitivity
-{
-	// divide the values by 1000 to get the actual value as in the datasheet
-	LSM6DSL_G_FS_125_SENS = 4375,
-	LSM6DSL_G_FS_250_SENS = 8750,
-	LSM6DSL_G_FS_500_SENS = 17500,
-	LSM6DSL_G_FS_1000_SENS = 35000,
-	LSM6DSL_G_FS_2000_SENS = 70000
 };
 
 enum LSM6DSL_G_ODR
@@ -507,4 +488,31 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isTempDataAvailabe(LSM6DSL *dev);
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_readTemperature(LSM6DSL *dev, LSM6DSL_TempData *t);
 
+/*
+ * @brief Converts accelerometer raw data into meter per second squared
+ *
+ * This function converts a raw accelerometer reading from a given axis
+ * into acceleration in meters per second squared, based on the configured
+ * full-scale range.
+ *
+ * @param[in] axisN accelerometer's raw n axis value (e.g x, y or z)
+ * @param[in] r accelerometer full scale range (one of LSM6DSL_XL_FS_Range)
+ *
+ * @return float acceleration in meters per second squared
+ */
+float convertAccelRawDataTomS2(int16_t axisN, enum LSM6DSL_XL_FS_Range r);
+
+/*
+ * @brief Converts gyroscope raw data into degrees per second (dps)
+ *
+ * This function converts a raw gyroscope reading from a given axis
+ * into degrees per second, based on the configured
+ * full-scale range.
+ *
+ * @param[in] axisN gyroscope's raw n axis value (e.g x, y or z)
+ * @param[in] r gyroscope's full scale range (one of LSM6DSL_G_FS_Range)
+ *
+ * @return float rotation speed in degrees per second
+ */
+float convertGyroRawDataToDPS(int16_t axisN, enum LSM6DSL_G_FS_Range r);
 #endif /* LSM6DSL_LSM6DSL_H_ */

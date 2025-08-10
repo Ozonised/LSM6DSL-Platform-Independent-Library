@@ -8,8 +8,11 @@
 #include "lsm6dsl.h"
 
 const int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
-const uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
-		MAX_ST_G_250FS = 80000, MAX_ST_G_2000FS = 700000;
+const uint32_t MIN_ST_G_250FS = 20, MIN_ST_G_2000FS = 150, MAX_ST_G_250FS = 80,
+		MAX_ST_G_2000FS = 700;
+
+const float LSM6DSL_XL_FS_Sensitivity[] = { 0.61, 0.122, 0.244, 0.488 };
+const float LSM6DSL_G_FS_Sensitivity[] = { 8.75, 17.5, 35, 70, 4.375 };
 
 static LSM6DSL_INTF_RET_TYPE LSM6DSL_ModifyReg(LSM6DSL *dev, uint8_t regAddr, uint8_t *val)
 {
@@ -417,12 +420,23 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroRawData *gy
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
+float convertAccelRawDataTomS2(int16_t axisN, enum LSM6DSL_XL_FS_Range r)
+{
+	return ((axisN * LSM6DSL_XL_FS_Sensitivity[r]) * 9.8) / 1000.0;
+}
+
+float convertGyroRawDataToDPS(int16_t axisN, enum LSM6DSL_G_FS_Range r)
+{
+	return (axisN * LSM6DSL_G_FS_Sensitivity[r]) / 1000.0;
+}
+
 LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 {
 	if (dev != NULL)
 	{
 		// the test procedure is described in figure 36 of AN5040
 		LSM6DSL_AccelRawData currentAccel, StAccel, noStAccel;
+		float accelX, accelY, accelZ;
 		uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
 
@@ -484,20 +498,19 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 		}
 
 		// store the difference between the value of x, y and z with and without self test
-		currentAccel.x = ((StAccel.x - noStAccel.x) * LSM6DSL_XL_FS_4G_SENS)
-				/ 1000;
-		currentAccel.y = ((StAccel.y - noStAccel.y) * LSM6DSL_XL_FS_4G_SENS)
-				/ 1000;
-		currentAccel.z = ((StAccel.z - noStAccel.z) * LSM6DSL_XL_FS_4G_SENS)
-				/ 1000;
+		accelX = ((StAccel.x - noStAccel.x)
+				* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_4G]) / 1000;
+		accelY = ((StAccel.y - noStAccel.y)
+				* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_4G]) / 1000;
+		accelZ = ((StAccel.z - noStAccel.z)
+				* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_4G] / 1000);
 
 		st = 0x00;
-		if (abs(currentAccel.x) >= abs(MIN_ST_XL)
-				&& abs(currentAccel.x) <= abs(MAX_ST_XL)
-				&& abs(currentAccel.y) >= abs(MIN_ST_XL)
-				&& abs(currentAccel.y) <= abs(MAX_ST_XL)
-				&& abs(currentAccel.z) >= abs(MIN_ST_XL)
-				&& abs(currentAccel.z) <= abs(MAX_ST_XL))
+		if (abs(accelX) >= abs(MIN_ST_XL) && abs(accelX) <= abs(MAX_ST_XL)
+				&& abs(accelY) >= abs(MIN_ST_XL)
+				&& abs(accelY) <= abs(MAX_ST_XL)
+				&& abs(accelZ) >= abs(MIN_ST_XL)
+				&& abs(accelZ) <= abs(MAX_ST_XL))
 		{
 			// disable self test and accelerometer
 			if (LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL5_C,
@@ -584,12 +597,12 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 		}
 
 		// store the difference between the value of x, y and z with and without self test
-		deltaGyroX = (long) ((StGyro.x - noStGyro.x) * LSM6DSL_G_FS_250_SENS)
-				/ 1000;
-		deltaGyroY = (long) ((StGyro.y - noStGyro.y) * LSM6DSL_G_FS_250_SENS)
-				/ 1000;
-		deltaGyroZ = (long) ((StGyro.z - noStGyro.z) * LSM6DSL_G_FS_250_SENS)
-				/ 1000;
+		deltaGyroX = ((StGyro.x - noStGyro.x)
+				* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_250DPS]);
+		deltaGyroY = ((StGyro.y - noStGyro.y)
+				* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_250DPS]);
+		deltaGyroZ = ((StGyro.z - noStGyro.z)
+				* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_250DPS]);
 		st = 0x00;
 		if (abs(deltaGyroX) >= abs(MIN_ST_G_250FS)
 				&& abs(deltaGyroX) <= abs(MAX_ST_G_250FS)
