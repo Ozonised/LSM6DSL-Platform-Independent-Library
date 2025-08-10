@@ -34,7 +34,7 @@
 #define LSM6DSL_CTRL7_G                   (uint8_t)0x16
 #define LSM6DSL_CTRL8_XL                  (uint8_t)0x17
 #define LSM6DSL_CTRL9_XL                  (uint8_t)0x18
-#define LSM6DSL_                  (uint8_t)0x19
+#define LSM6DSL_CTRL10_C                  (uint8_t)0x19
 #define LSM6DSL_MASTER_CONFIG             (uint8_t)0x1A
 #define LSM6DSL_WAKE_UP_SRC               (uint8_t)0x1B
 #define LSM6DSL_TAP_SRC                   (uint8_t)0x1C

@@ -381,7 +381,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleBlockDataUpdate(LSM6DSL *dev, uint8_t m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelRawData *xl)
 {
 	if (dev != NULL && xl != NULL)
 	{
@@ -399,7 +399,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroData *gy)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroRawData *gy)
 {
 	if (dev != NULL && gy != NULL)
 	{
@@ -422,7 +422,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		// the test procedure is described in figure 36 of AN5040
-		LSM6DSL_AccelData currentAccel, StAccel, noStAccel;
+		LSM6DSL_AccelRawData currentAccel, StAccel, noStAccel;
 		uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
 
@@ -521,7 +521,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev)
 	if (dev != NULL)
 	{
 		// the test procedure is described in figure 37 of AN5040
-		LSM6DSL_GyroData currentGyro, StGyro, noStGyro;
+		LSM6DSL_GyroRawData currentGyro, StGyro, noStGyro;
 		long deltaGyroX, deltaGyroY, deltaGyroZ;
 		uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00 };
@@ -651,7 +651,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_ODR odr, uint8_t LNLL)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_BW odr, uint8_t LNLL)
 {
 	if (dev != NULL)
 	{
@@ -673,8 +673,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 
 		switch (odr)
 		{
-		case LSM6DSL_XL_LPF_ODR_2:
-		case LSM6DSL_XL_LPF_ODR_4:
+		case LSM6DSL_XL_LPF_BW_ODR_2:
+		case LSM6DSL_XL_LPF_BW_ODR_4:
 
 			// disable LPF2 path
 			ctrl8_xl &= ~(LSM6DSL_LPF2_XL_EN );
@@ -686,7 +686,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 					&ctrl1_xl, 1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 				return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-			if (odr == LSM6DSL_XL_LPF_ODR_4)
+			if (odr == LSM6DSL_XL_LPF_BW_ODR_4)
 				ctrl1_xl |= LSM6DSL_LPF1_BW_SEL;
 			else
 				ctrl1_xl &= ~(LSM6DSL_LPF1_BW_SEL );
@@ -695,7 +695,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 
 			break;
 
-		case LSM6DSL_XL_LPF_ODR_50:
+		case LSM6DSL_XL_LPF_BW_ODR_50:
 
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN;
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0 );
@@ -703,21 +703,21 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
-		case LSM6DSL_XL_LPF_ODR_100:
+		case LSM6DSL_XL_LPF_BW_ODR_100:
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL0;
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 );
 
 			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
-		case LSM6DSL_XL_LPF_ODR_9:
+		case LSM6DSL_XL_LPF_BW_ODR_9:
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL1;
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL0 );
 
 			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
-		case LSM6DSL_XL_LPF_ODR_400:
+		case LSM6DSL_XL_LPF_BW_ODR_400:
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0;
 
 			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
@@ -731,7 +731,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_ODR odr)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_BW odr)
 {
 	if (dev != NULL)
 	{
@@ -744,21 +744,21 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_X
 
 		switch (odr)
 		{
-		case LSM6DSL_XL_HPF_ODR_4:
+		case LSM6DSL_XL_HPF_BW_ODR_4:
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0 );
 			break;
 
-		case LSM6DSL_XL_HPF_ODR_100:
+		case LSM6DSL_XL_HPF_BW_ODR_100:
 			ctrl8_xl |= (LSM6DSL_HPCF_XL0 );
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 );
 			break;
 
-		case LSM6DSL_XL_HPF_ODR_9:
+		case LSM6DSL_XL_HPF_BW_ODR_9:
 			ctrl8_xl |= (LSM6DSL_HPCF_XL1 );
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL0 );
 			break;
 
-		case LSM6DSL_XL_HPF_ODR_400:
+		case LSM6DSL_XL_HPF_BW_ODR_400:
 			ctrl8_xl |= (LSM6DSL_HPCF_XL0 | LSM6DSL_HPCF_XL1 );
 			break;
 

@@ -61,22 +61,22 @@ enum LSM6DSL_XL_ODR
 	LSM6DSL_XL_ODR_1_6Hz
 };
 
-enum LSM6DSL_XL_LPF_ODR
+enum LSM6DSL_XL_LPF_BW
 {
-	LSM6DSL_XL_LPF_ODR_2 = 0,
-	LSM6DSL_XL_LPF_ODR_4,
-	LSM6DSL_XL_LPF_ODR_50,
-	LSM6DSL_XL_LPF_ODR_100,
-	LSM6DSL_XL_LPF_ODR_9,
-	LSM6DSL_XL_LPF_ODR_400,
+	LSM6DSL_XL_LPF_BW_ODR_2 = 0,
+	LSM6DSL_XL_LPF_BW_ODR_4,
+	LSM6DSL_XL_LPF_BW_ODR_50,
+	LSM6DSL_XL_LPF_BW_ODR_100,
+	LSM6DSL_XL_LPF_BW_ODR_9,
+	LSM6DSL_XL_LPF_BW_ODR_400,
 };
 
-enum LSM6DSL_XL_HPF_ODR
+enum LSM6DSL_XL_HPF_BW
 {
-	LSM6DSL_XL_HPF_ODR_4 = 0,
-	LSM6DSL_XL_HPF_ODR_100,
-	LSM6DSL_XL_HPF_ODR_9,
-	LSM6DSL_XL_HPF_ODR_400,
+	LSM6DSL_XL_HPF_BW_ODR_4 = 0,
+	LSM6DSL_XL_HPF_BW_ODR_100,
+	LSM6DSL_XL_HPF_BW_ODR_9,
+	LSM6DSL_XL_HPF_BW_ODR_400,
 };
 
 enum LSM6DSL_XL_G_HM_MODE
@@ -149,14 +149,14 @@ typedef struct
 	int16_t x;
 	int16_t y;
 	int16_t z;
-} LSM6DSL_AccelData;
+} LSM6DSL_AccelRawData;
 
 typedef struct
 {
 	int16_t x;
 	int16_t y;
 	int16_t z;
-} LSM6DSL_GyroData;
+} LSM6DSL_GyroRawData;
 
 enum LSM6DSL_ENDIAN
 {
@@ -327,16 +327,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isAccelDataAvailabe(LSM6DSL *dev);
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_G_HM_MODE m);
 
 /*
- * @brief Read accelerometer
+ * @brief Read accelerometer's raw data
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[out] xl pointer to AccelData structure
+ * @param[out] xl pointer to AccelRawData structure
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelData *xl);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readAccelData(LSM6DSL *dev, LSM6DSL_AccelRawData *xl);
 
 /*
  * @brief Performs accelerometer self test
@@ -373,7 +373,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
  * @brief Configure accelerometer digital low pass filter
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] odr one of LSM6DSL_XL_LPF_ODR values
+ * @param[in] odr one of LSM6DSL_XL_LPF_BW values
  * @param[in] LNLL input composite value, 1 = low noise & 0 = low latency
  *
  * @return LSM6DSL_INTF_RET_TYPE
@@ -382,7 +382,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
  *
  * @see table 9 of AN5040 for samples to discard, alternatively use LSM6DSL_setDRDYMask() for ODR/2 & ODR/4
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_ODR odr, uint8_t LNLL);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_BW odr, uint8_t LNLL);
 
 /*
  * @brief Configure accelerometer digital high pass filter
@@ -396,7 +396,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
  *
  * @see table 9 of AN5040 for samples to discard
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_ODR odr);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_BW odr);
 
 /*
  * @brief Sets Gyros ODR
@@ -450,16 +450,16 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_isGyroDataAvailabe(LSM6DSL *dev);
 LSM6DSL_INTF_RET_TYPE LSM6DSL_setGyroHighPerfMode(LSM6DSL *dev, enum LSM6DSL_XL_G_HM_MODE m);
 
 /*
- * @brief Read gyroscope
+ * @brief Read gyroscope's raw data
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[out] gy pointer to GyroData structure
+ * @param[out] gy pointer to GyroRawData structure
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroData *gy);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroRawData *gy);
 
 /*
  * @brief Performs gyroscope self test
