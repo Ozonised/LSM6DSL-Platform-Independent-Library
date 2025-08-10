@@ -8,8 +8,8 @@
 #include "lsm6dsl.hpp"
 
 static constexpr int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
-static constexpr uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
-		MAX_ST_G_250FS = 80000, MAX_ST_G_2000FS = 700000;
+static constexpr uint16_t MIN_ST_G_250FS = 20, MIN_ST_G_2000FS = 150,
+		MAX_ST_G_250FS = 80, MAX_ST_G_2000FS = 700;
 
 // sensitivity in mg/LSB
 const float LSM6DSL_XL_FS_Sensitivity[] = { 0.061, 0.122, 0.244, 0.488 };
@@ -585,6 +585,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 {
 	// the test procedure is described in figure 36 of AN5040
 	LSM6DSL_AccelRawData currentAccel, StAccel, noStAccel;
+	float accelX, accelY, accelZ;
 	uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00 };
 
@@ -643,20 +644,20 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 	}
 
 	// store the difference between the value of x, y and z with and without self test
-	currentAccel.x = static_cast<long>((StAccel.x - noStAccel.x)
+	accelX = static_cast<float>((StAccel.x - noStAccel.x)
 			* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_Range::LSM6DSL_XL_FS_4G]);
-	currentAccel.y = static_cast<long>((StAccel.y - noStAccel.y)
+	accelY = static_cast<float>((StAccel.y - noStAccel.y)
 			* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_Range::LSM6DSL_XL_FS_4G]);
-	currentAccel.z = static_cast<long>((StAccel.z - noStAccel.z)
+	accelZ = static_cast<float>((StAccel.z - noStAccel.z)
 			* LSM6DSL_XL_FS_Sensitivity[LSM6DSL_XL_FS_Range::LSM6DSL_XL_FS_4G]);
 
 	st = 0x00;
-	if (std::labs(currentAccel.x) >= std::labs(MIN_ST_XL)
-			&& std::labs(currentAccel.x) <= std::labs(MAX_ST_XL)
-			&& std::labs(currentAccel.y) >= std::labs(MIN_ST_XL)
-			&& std::labs(currentAccel.y) <= std::labs(MAX_ST_XL)
-			&& std::labs(currentAccel.z) >= std::labs(MIN_ST_XL)
-			&& std::labs(currentAccel.z) <= std::labs(MAX_ST_XL))
+	if (std::abs(accelX) >= std::abs(MIN_ST_XL)
+			&& std::abs(accelX) <= std::abs(MAX_ST_XL)
+			&& std::abs(accelY) >= std::abs(MIN_ST_XL)
+			&& std::abs(accelY) <= std::abs(MAX_ST_XL)
+			&& std::abs(accelZ) >= std::abs(MIN_ST_XL)
+			&& std::abs(accelZ) <= std::abs(MAX_ST_XL))
 	{
 		// disable self test and accelerometer
 		if (ModifyReg(LSM6DSL_REG::CTRL5_C,
@@ -694,7 +695,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 {
 	// the test procedure is described in figure 37 of AN5040
 	LSM6DSL_GyroRawData currentGyro, StGyro, noStGyro;
-	long deltaGyroX, deltaGyroY, deltaGyroZ;
+	float deltaGyroX, deltaGyroY, deltaGyroZ;
 	uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00 };
 
@@ -753,20 +754,23 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 	}
 
 	// store the difference between the value of x, y and z with and without self test
-	deltaGyroX = static_cast<long>((StGyro.x - noStGyro.x)
-			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS]);
-	deltaGyroY = static_cast<long>((StGyro.y - noStGyro.y)
-			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS]);
-	deltaGyroZ = static_cast<long>((StGyro.z - noStGyro.z)
-			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS]);
+	deltaGyroX = static_cast<float>((StGyro.x - noStGyro.x)
+			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS])
+			/ 1000;
+	deltaGyroY = static_cast<float>((StGyro.y - noStGyro.y)
+			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS])
+			/ 1000;
+	deltaGyroZ = static_cast<float>((StGyro.z - noStGyro.z)
+			* LSM6DSL_G_FS_Sensitivity[LSM6DSL_G_FS_Range::LSM6DSL_G_FS_250DPS])
+			/ 1000;
 
 	st = 0x00;
-	if (std::labs(deltaGyroX) >= std::labs(MIN_ST_G_250FS)
-			&& std::labs(deltaGyroX) <= std::labs(MAX_ST_G_250FS)
-			&& std::labs(deltaGyroY) >= std::labs(MIN_ST_G_250FS)
-			&& std::labs(deltaGyroY) <= std::labs(MAX_ST_G_250FS)
-			&& std::labs(deltaGyroZ) >= std::labs(MIN_ST_G_250FS)
-			&& std::labs(deltaGyroZ) <= std::labs(MAX_ST_G_250FS))
+	if (std::abs(deltaGyroX) >= std::abs(MIN_ST_G_250FS)
+			&& std::abs(deltaGyroX) <= std::abs(MAX_ST_G_250FS)
+			&& std::abs(deltaGyroY) >= std::abs(MIN_ST_G_250FS)
+			&& std::abs(deltaGyroY) <= std::abs(MAX_ST_G_250FS)
+			&& std::abs(deltaGyroZ) >= std::abs(MIN_ST_G_250FS)
+			&& std::abs(deltaGyroZ) <= std::abs(MAX_ST_G_250FS))
 	{
 		// disable self test and gyroscope
 		if (ModifyReg(LSM6DSL_REG::CTRL5_C,
