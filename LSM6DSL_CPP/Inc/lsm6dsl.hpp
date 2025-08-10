@@ -20,14 +20,14 @@ enum LSM6DSL_XL_FS_Range : uint8_t
 	LSM6DSL_XL_FS_2G = 0, LSM6DSL_XL_FS_16G, LSM6DSL_XL_FS_4G, LSM6DSL_XL_FS_8G
 };
 
-enum LSM6DSL_XL_FS_Sensitivity : uint16_t
+namespace LSM6DSL_XL_FS_Sensitivity
 {
-	// divide the values by 1000 to get the actual value as in the datasheet
-	LSM6DSL_XL_FS_2G_SENS = 61,
-	LSM6DSL_XL_FS_4G_SENS = 122,
-	LSM6DSL_XL_FS_8G_SENS = 244,
-	LSM6DSL_XL_FS_16G_SENS = 488
-};
+	// sensitivity in mg/LSB
+	constexpr float FS_2G_SENS = 0.061;
+	constexpr float FS_4G_SENS = 0.122;
+	constexpr float FS_8G_SENS = 0.244;
+	constexpr float FS_16G_SENS = 0.488;
+}
 
 enum LSM6DSL_XL_ODR : uint8_t
 {
@@ -77,15 +77,15 @@ enum LSM6DSL_G_FS_Range : uint8_t
 	LSM6DSL_G_FS_125DPS
 };
 
-enum LSM6DSL_G_FS_Sensitivity
+namespace LSM6DSL_G_FS_Sensitivity
 {
-	// divide the values by 1000 to get the actual value as in the datasheet
-	LSM6DSL_G_FS_125_SENS = 4375,
-	LSM6DSL_G_FS_250_SENS = 8750,
-	LSM6DSL_G_FS_500_SENS = 17500,
-	LSM6DSL_G_FS_1000_SENS = 35000,
-	LSM6DSL_G_FS_2000_SENS = 70000
-};
+	// sensitivity in mdps/LSB
+	constexpr float FS_125DPS_SENS = 4.375;
+	constexpr float FS_250DPS_SENS = 8.75;
+	constexpr float FS_500DPS_SENS = 17.5;
+	constexpr float FS_1000DPS_SENS = 35;
+	constexpr float FS_2000DPS_SENS = 70;
+}
 
 enum LSM6DSL_G_ODR : uint8_t
 {
@@ -128,14 +128,14 @@ enum LSM6DSL_INT2_Sources : uint8_t
 	LSM6DSL_INT2_STEP_DELTA = (1 << 7),
 };
 
-struct LSM6DSL_AccelData
+struct LSM6DSL_AccelRawData
 {
 		int16_t x;
 		int16_t y;
 		int16_t z;
 };
 
-struct LSM6DSL_GyroData
+struct LSM6DSL_GyroRawData
 {
 		int16_t x;
 		int16_t y;
@@ -192,7 +192,7 @@ class LSM6DSL
 
 		LSM6DSL_INTF_RET_TYPE setAccelHighPerfMode(enum LSM6DSL_XL_G_HM_MODE m);
 
-		LSM6DSL_INTF_RET_TYPE readAccelData(LSM6DSL_AccelData *xl);
+		LSM6DSL_INTF_RET_TYPE readAccelData(LSM6DSL_AccelRawData *xl);
 
 		LSM6DSL_INTF_RET_TYPE selfTestAccel();
 
@@ -210,7 +210,7 @@ class LSM6DSL
 
 		LSM6DSL_INTF_RET_TYPE setGyroHighPerfMode(enum LSM6DSL_XL_G_HM_MODE m);
 
-		LSM6DSL_INTF_RET_TYPE readGyroData(LSM6DSL_GyroData *gy);
+		LSM6DSL_INTF_RET_TYPE readGyroData(LSM6DSL_GyroRawData *gy);
 
 		LSM6DSL_INTF_RET_TYPE selfTestGyro();
 

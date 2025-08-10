@@ -7,8 +7,8 @@
 
 #include "lsm6dsl.hpp"
 
-const int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
-const uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
+static constexpr int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
+static constexpr uint32_t MIN_ST_G_250FS = 20000, MIN_ST_G_2000FS = 150000,
 		MAX_ST_G_250FS = 80000, MAX_ST_G_2000FS = 700000;
 
 LSM6DSL_INTF_RET_TYPE LSM6DSL::ModifyReg(uint8_t regAddr, uint8_t *val)
@@ -476,13 +476,13 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::toggleBlockDataUpdate(uint8_t m)
 /*
  * @brief Read accelerometer
  *
- * @param[out] xl pointer to AccelData structure
+ * @param[out] xl pointer to LSM6DSL_AccelRawData structure
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::readAccelData(LSM6DSL_AccelData *xl)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::readAccelData(LSM6DSL_AccelRawData *xl)
 {
 	if (xl != NULL)
 	{
@@ -503,13 +503,13 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readAccelData(LSM6DSL_AccelData *xl)
 /*
  * @brief Read gyroscope
  *
- * @param[out] gy pointer to GyroData structure
+ * @param[out] gy pointer to LSM6DSL_GyroRawData structure
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS reading successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::readGyroData(LSM6DSL_GyroData *gy)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::readGyroData(LSM6DSL_GyroRawData *gy)
 {
 	if (gy != NULL)
 	{
@@ -546,7 +546,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readGyroData(LSM6DSL_GyroData *gy)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 {
 	// the test procedure is described in figure 36 of AN5040
-	LSM6DSL_AccelData currentAccel, StAccel, noStAccel;
+	LSM6DSL_AccelRawData currentAccel, StAccel, noStAccel;
 	uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00 };
 
@@ -605,9 +605,12 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 	}
 
 	// store the difference between the value of x, y and z with and without self test
-	currentAccel.x = ((StAccel.x - noStAccel.x) * LSM6DSL_XL_FS_4G_SENS) / 1000;
-	currentAccel.y = ((StAccel.y - noStAccel.y) * LSM6DSL_XL_FS_4G_SENS) / 1000;
-	currentAccel.z = ((StAccel.z - noStAccel.z) * LSM6DSL_XL_FS_4G_SENS) / 1000;
+	currentAccel.x = static_cast<long>((StAccel.x - noStAccel.x)
+			* LSM6DSL_XL_FS_Sensitivity::FS_4G_SENS);
+	currentAccel.y = static_cast<long>((StAccel.y - noStAccel.y)
+			* LSM6DSL_XL_FS_Sensitivity::FS_4G_SENS);
+	currentAccel.z = static_cast<long>((StAccel.z - noStAccel.z)
+			* LSM6DSL_XL_FS_Sensitivity::FS_4G_SENS);
 
 	st = 0x00;
 	if (std::labs(currentAccel.x) >= std::labs(MIN_ST_XL)
@@ -652,7 +655,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 {
 	// the test procedure is described in figure 37 of AN5040
-	LSM6DSL_GyroData currentGyro, StGyro, noStGyro;
+	LSM6DSL_GyroRawData currentGyro, StGyro, noStGyro;
 	long deltaGyroX, deltaGyroY, deltaGyroZ;
 	uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00 };
@@ -712,12 +715,13 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 	}
 
 	// store the difference between the value of x, y and z with and without self test
-	deltaGyroX = (long) ((StGyro.x - noStGyro.x) * LSM6DSL_G_FS_250_SENS)
-			/ 1000;
-	deltaGyroY = (long) ((StGyro.y - noStGyro.y) * LSM6DSL_G_FS_250_SENS)
-			/ 1000;
-	deltaGyroZ = (long) ((StGyro.z - noStGyro.z) * LSM6DSL_G_FS_250_SENS)
-			/ 1000;
+	deltaGyroX = static_cast<long>((StGyro.x - noStGyro.x)
+			* LSM6DSL_G_FS_Sensitivity::FS_250DPS_SENS);
+	deltaGyroY = static_cast<long>((StGyro.y - noStGyro.y)
+			* LSM6DSL_G_FS_Sensitivity::FS_250DPS_SENS);
+	deltaGyroZ = static_cast<long>((StGyro.z - noStGyro.z)
+			* LSM6DSL_G_FS_Sensitivity::FS_250DPS_SENS);
+
 	st = 0x00;
 	if (std::labs(deltaGyroX) >= std::labs(MIN_ST_G_250FS)
 			&& std::labs(deltaGyroX) <= std::labs(MAX_ST_G_250FS)
