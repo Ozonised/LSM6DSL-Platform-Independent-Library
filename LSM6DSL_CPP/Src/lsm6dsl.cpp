@@ -63,7 +63,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::isPresent()
  *
  * @see section 4.5 of AN5040
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setBigLittleEndian(enum LSM6DSL_ENDIAN end)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setBigLittleEndian(LSM6DSL_ENDIAN end)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL3_C, &t,
@@ -127,7 +127,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAllIRQonINT1(uint8_t en)
  *
  * @see Table 12 & 13 of AN5040 for number of samples to discard.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelODR(enum LSM6DSL_XL_ODR m)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelODR(LSM6DSL_XL_ODR m)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
@@ -195,7 +195,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::isAccelDataAvailabe()
  *
  * @see Table 14, 15 & 16 of AN5040 for number of samples to discard.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroODR(enum LSM6DSL_G_ODR m)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroODR(LSM6DSL_G_ODR m)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL2_G, &t,
@@ -240,7 +240,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroODR(enum LSM6DSL_G_ODR m)
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelFSRange(enum LSM6DSL_XL_FS_Range r)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelFSRange(LSM6DSL_XL_FS_Range r)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
@@ -277,7 +277,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelFSRange(enum LSM6DSL_XL_FS_Range r)
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
  * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroFSRange(enum LSM6DSL_G_FS_Range r)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroFSRange(LSM6DSL_G_FS_Range r)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL2_G, &t,
@@ -320,7 +320,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroFSRange(enum LSM6DSL_G_FS_Range r)
  *
  * @see Table 12 & 13 of AN5040 for number of samples to discard.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelHighPerfMode(enum LSM6DSL_XL_G_HM_MODE m)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelHighPerfMode(LSM6DSL_XL_G_HM_MODE m)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL6_C, &t,
@@ -348,7 +348,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelHighPerfMode(enum LSM6DSL_XL_G_HM_MODE m)
  *
  * @see Table 14, 15 & 16 of AN5040 for number of samples to discard.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroHighPerfMode(enum LSM6DSL_XL_G_HM_MODE m)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroHighPerfMode(LSM6DSL_XL_G_HM_MODE m)
 {
 	uint8_t t;
 	if (read(chipAddr, LSM6DSL_REG::CTRL7_G, &t,
@@ -422,7 +422,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::isTempDataAvailabe()
  * @note This function overwrites the INT1_CTRL reg with value of s.
  * 		 To enable multiple sources the values of LSM6DSL_INT1_Sources should be ORed.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::INT1SourceConfig(enum LSM6DSL_INT1_Sources s)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::INT1SourceConfig(LSM6DSL_INT1_Sources s)
 {
 	if (s >= 0 && s <= 255)
 	{
@@ -443,7 +443,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::INT1SourceConfig(enum LSM6DSL_INT1_Sources s)
  * @note This function overwrites the INT2_CTRL reg with value of s.
  * 	   	 To enable multiple sources the values of LSM6DSL_INT2_Sources should be ORed.
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::INT2SourceConfig(enum LSM6DSL_INT2_Sources s)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::INT2SourceConfig(LSM6DSL_INT2_Sources s)
 {
 	if (s >= 0 && s <= 255)
 	{
@@ -888,7 +888,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8
 				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-		if (odr == LSM6DSL_XL_LPF_BW_ODR_4)
+		if (bw == LSM6DSL_XL_LPF_BW_ODR_4)
 			ctrl1_xl |= LSM6DSL_REG::LPF1_BW_SEL;
 		else
 			ctrl1_xl &= ~(LSM6DSL_REG::LPF1_BW_SEL);
