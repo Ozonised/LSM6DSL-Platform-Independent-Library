@@ -331,7 +331,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelHighPerfMode(enum LSM6DSL_XL_G_HM_MODE m)
 		else
 			t |= LSM6DSL_REG::XL_HM_MODE;
 
-		return LSM6DSL::ModifyReg(LSM6DSL_REG::CTRL6_C, &t);
+		return ModifyReg(LSM6DSL_REG::CTRL6_C, &t);
 	}
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -590,7 +590,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 			0x00 };
 
 	if (write(chipAddr, LSM6DSL_REG::CTRL1_XL, ptr,
-			10) == LSM6DSL_INTF_RET_TYPE_FAILURE)
+			10) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 	delayMs(100);
@@ -618,7 +618,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 
 	// self test enable
 	uint8_t st = 0x01;
-	if (ModifyReg(LSM6DSL_REG::CTRL5_C, &st) == LSM6DSL_INTF_RET_TYPE_FAILURE)
+	if (ModifyReg(LSM6DSL_REG::CTRL5_C, &st) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 	delayMs(100);
@@ -663,14 +663,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 		if (ModifyReg(LSM6DSL_REG::CTRL5_C,
 				&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && ModifyReg(LSM6DSL_REG::CTRL1_XL,
 						&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
-			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			return LSM6DSL_INTF_RET_TYPE_SUCCESS;	// self test passed
 		else
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 	}
 
-	if (ModifyReg(LSM6DSL_REG::CTRL5_C, &st) != LSM6DSL_INTF_RET_TYPE_SUCCESS
+	// self test failed and disable self test and accelerometer
+	if (ModifyReg(LSM6DSL_REG::CTRL5_C, &st) == LSM6DSL_INTF_RET_TYPE_SUCCESS
 			&& ModifyReg(LSM6DSL_REG::CTRL1_XL, &st)
-					!= LSM6DSL_INTF_RET_TYPE_SUCCESS)
+					== LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -776,14 +777,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 		if (ModifyReg(LSM6DSL_REG::CTRL5_C,
 				&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS && ModifyReg(LSM6DSL_REG::CTRL2_G,
 						&st) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
-			return LSM6DSL_INTF_RET_TYPE_SUCCESS;
+			return LSM6DSL_INTF_RET_TYPE_SUCCESS; // self test passed
 		else
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 	}
 
-	if (ModifyReg(LSM6DSL_REG::CTRL5_C, &st) != LSM6DSL_INTF_RET_TYPE_SUCCESS
+	// test failed and disable self test and gyroscope
+	if (ModifyReg(LSM6DSL_REG::CTRL5_C, &st) == LSM6DSL_INTF_RET_TYPE_SUCCESS
 			&& ModifyReg(LSM6DSL_REG::CTRL2_G, &st)
-					!= LSM6DSL_INTF_RET_TYPE_SUCCESS)
+					== LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
@@ -892,36 +894,27 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8
 			ctrl1_xl &= ~(LSM6DSL_REG::LPF1_BW_SEL);
 
 		return ModifyReg(LSM6DSL_REG::CTRL1_XL, &ctrl1_xl);
-
 		break;
 
 	case LSM6DSL_XL_LPF_BW_ODR_50:
 
 		ctrl8_xl |= LSM6DSL_REG::LPF2_XL_EN;
 		ctrl8_xl &= ~(LSM6DSL_REG::HPCF_XL1 | LSM6DSL_REG::HPCF_XL0);
-
-		return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 		break;
 
 	case LSM6DSL_XL_LPF_BW_ODR_100:
 		ctrl8_xl |= LSM6DSL_REG::LPF2_XL_EN | LSM6DSL_REG::HPCF_XL0;
 		ctrl8_xl &= ~(LSM6DSL_REG::HPCF_XL1);
-
-		return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 		break;
 
 	case LSM6DSL_XL_LPF_BW_ODR_9:
 		ctrl8_xl |= LSM6DSL_REG::LPF2_XL_EN | LSM6DSL_REG::HPCF_XL1;
 		ctrl8_xl &= ~(LSM6DSL_REG::HPCF_XL0);
-
-		return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 		break;
 
 	case LSM6DSL_XL_LPF_BW_ODR_400:
 		ctrl8_xl |= LSM6DSL_REG::LPF2_XL_EN | LSM6DSL_REG::HPCF_XL1
 				| LSM6DSL_REG::HPCF_XL0;
-
-		return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 		break;
 	default:
 		// incorrect value
@@ -929,7 +922,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8
 		break;
 	}
 
-	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+	return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 }
 
 /*
@@ -979,8 +972,6 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(LSM6DSL_XL_HPF_BW bw)
 	}
 
 	return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
-
-	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
 LSM6DSL_INTF_RET_TYPE LSM6DSL::configGyroHPF(LSM6DSL_G_HPF_BW bw)
