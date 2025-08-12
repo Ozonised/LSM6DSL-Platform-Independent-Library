@@ -175,8 +175,6 @@ class LSM6DSL
 
 		LSM6DSL_INTF_RET_TYPE readAccelData(LSM6DSL_AccelRawData *xl);
 
-		LSM6DSL_INTF_RET_TYPE convertAccelRawData(LSM6DSL_AccelRawData *xl);
-
 		LSM6DSL_INTF_RET_TYPE selfTestAccel();
 
 		LSM6DSL_INTF_RET_TYPE setAccelAnalogChainBW(uint8_t m);
