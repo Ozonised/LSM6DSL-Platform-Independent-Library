@@ -974,6 +974,15 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(LSM6DSL_XL_HPF_BW bw)
 	return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 }
 
+/*
+ * @brief Configure gyroscope digital high pass filter
+ *
+ * @param[in] bw one of LSM6DSL_G_HPF_BW values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ */
 LSM6DSL_INTF_RET_TYPE LSM6DSL::configGyroHPF(LSM6DSL_G_HPF_BW bw)
 {
 	uint8_t ctrl7_G;
