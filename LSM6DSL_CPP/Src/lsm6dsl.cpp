@@ -844,7 +844,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelAnalogChainBW(uint8_t m)
 /*
  * @brief Configure accelerometer digital low pass filter
  *
- * @param[in] odr one of LSM6DSL_XL_LPF_BW values
+ * @param[in] bw one of LSM6DSL_XL_LPF_BW values
  * @param[in] LNLL input composite value, 1 = low noise & 0 = low latency
  *
  * @return LSM6DSL_INTF_RET_TYPE
@@ -853,7 +853,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelAnalogChainBW(uint8_t m)
  *
  * @see table 9 of AN5040 for samples to discard, alternatively use LSM6DSL_setDRDYMask() for ODR/2 & ODR/4
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(enum LSM6DSL_XL_LPF_BW odr, uint8_t LNLL)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8_t LNLL)
 {
 	uint8_t ctrl8_xl, ctrl1_xl;
 	if (read(chipAddr, LSM6DSL_REG::CTRL8_XL, &ctrl8_xl,
@@ -871,7 +871,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(enum LSM6DSL_XL_LPF_BW odr,
 			&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-	switch (odr)
+	switch (bw)
 	{
 	case LSM6DSL_XL_LPF_BW_ODR_2:
 	case LSM6DSL_XL_LPF_BW_ODR_4:
@@ -935,7 +935,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(enum LSM6DSL_XL_LPF_BW odr,
 /*
  * @brief Configure accelerometer digital high pass filter
  *
- * @param[in] odr one of LSM6DSL_XL_HPF_BW values
+ * @param[in] bw one of LSM6DSL_XL_HPF_BW values
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
@@ -943,7 +943,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(enum LSM6DSL_XL_LPF_BW odr,
  *
  * @see table 9 of AN5040 for samples to discard
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(enum LSM6DSL_XL_HPF_BW odr)
+LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(LSM6DSL_XL_HPF_BW bw)
 {
 	uint8_t ctrl8_xl;
 	if (read(chipAddr, LSM6DSL_REG::CTRL8_XL, &ctrl8_xl,
@@ -952,7 +952,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(enum LSM6DSL_XL_HPF_BW odr)
 
 	ctrl8_xl &= ~LSM6DSL_REG::INPUT_COMPOSITE; // low latency
 
-	switch (odr)
+	switch (bw)
 	{
 	case LSM6DSL_XL_HPF_BW_ODR_4:
 		ctrl8_xl &= ~(LSM6DSL_REG::HPCF_XL1 | LSM6DSL_REG::HPCF_XL0);
@@ -981,6 +981,42 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(enum LSM6DSL_XL_HPF_BW odr)
 	return ModifyReg(LSM6DSL_REG::CTRL8_XL, &ctrl8_xl);
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL::configGyroHPF(LSM6DSL_G_HPF_BW bw)
+{
+	uint8_t ctrl7_G;
+
+	if (read(chipAddr, LSM6DSL_REG::CTRL7_G, &ctrl7_G,
+			1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+	ctrl7_G &= ~(LSM6DSL_REG::HPM0_G | LSM6DSL_REG::HPM1_G);
+
+	switch (bw)
+	{
+	case LSM6DSL_G_HPF_BW_0_016Hz:
+		break;
+
+	case LSM6DSL_G_HPF_BW_0_065Hz:
+		ctrl7_G |= LSM6DSL_REG::HPM0_G;
+		break;
+
+	case LSM6DSL_G_HPF_BW_0_260Hz:
+		ctrl7_G |= LSM6DSL_REG::HPM1_G;
+		break;
+
+	case LSM6DSL_G_HPF_BW_1_04Hz:
+		ctrl7_G |= LSM6DSL_REG::HPM0_G | LSM6DSL_REG::HPM1_G;
+		break;
+
+	default:
+		// incorrect value
+		return LSM6DSL_INTF_RET_TYPE_FAILURE;
+		break;
+	}
+
+	return ModifyReg(LSM6DSL_REG::CTRL7_G, &ctrl7_G);
 }
 
 /*
