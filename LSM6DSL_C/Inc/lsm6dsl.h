@@ -54,20 +54,20 @@ enum LSM6DSL_XL_ODR
 
 enum LSM6DSL_XL_LPF_BW
 {
-	LSM6DSL_XL_LPF_BW_ODR_2 = 0,
-	LSM6DSL_XL_LPF_BW_ODR_4,
-	LSM6DSL_XL_LPF_BW_ODR_50,
-	LSM6DSL_XL_LPF_BW_ODR_100,
-	LSM6DSL_XL_LPF_BW_ODR_9,
-	LSM6DSL_XL_LPF_BW_ODR_400,
+	LSM6DSL_XL_LPF_BW_ODR_2 = 0, 	// BW = ODR/2
+	LSM6DSL_XL_LPF_BW_ODR_4,		// BW = ODR/4
+	LSM6DSL_XL_LPF_BW_ODR_50,		// BW = ODR/50
+	LSM6DSL_XL_LPF_BW_ODR_100,		// BW = ODR/100
+	LSM6DSL_XL_LPF_BW_ODR_9,		// BW = ODR/9
+	LSM6DSL_XL_LPF_BW_ODR_400,		// BW = ODR/400
 };
 
 enum LSM6DSL_XL_HPF_BW
 {
-	LSM6DSL_XL_HPF_BW_ODR_4 = 0,
-	LSM6DSL_XL_HPF_BW_ODR_100,
-	LSM6DSL_XL_HPF_BW_ODR_9,
-	LSM6DSL_XL_HPF_BW_ODR_400,
+	LSM6DSL_XL_HPF_BW_ODR_4 = 0,	// BW = ODR/4
+	LSM6DSL_XL_HPF_BW_ODR_100,		// BW = ODR/100
+	LSM6DSL_XL_HPF_BW_ODR_9,		// BW = ODR/9
+	LSM6DSL_XL_HPF_BW_ODR_400,		// BW = ODR/400
 };
 
 enum LSM6DSL_XL_G_HM_MODE
@@ -97,6 +97,15 @@ enum LSM6DSL_G_ODR
 	LSM6DSL_G_ODR_1_66kHz,
 	LSM6DSL_G_ODR_3_33kHz,
 	LSM6DSL_G_ODR_6_66kHz,
+};
+
+enum LSM6DSL_G_HPF_BW
+{
+	LSM6DSL_G_HPF_BW_0_016Hz = 0, 	// 16mHz
+	LSM6DSL_G_HPF_BW_0_065Hz,		// 65mHz
+	LSM6DSL_G_HPF_BW_0_260Hz,		// 260mHz
+	LSM6DSL_G_HPF_BW_1_04Hz			// 1.04Hz
+
 };
 
 enum LSM6DSL_INT1_Sources
@@ -354,7 +363,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
  * @brief Configure accelerometer digital low pass filter
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] odr one of LSM6DSL_XL_LPF_BW values
+ * @param[in] bw one of LSM6DSL_XL_LPF_BW values
  * @param[in] LNLL input composite value, 1 = low noise & 0 = low latency
  *
  * @return LSM6DSL_INTF_RET_TYPE
@@ -363,13 +372,13 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m);
  *
  * @see table 9 of AN5040 for samples to discard, alternatively use LSM6DSL_setDRDYMask() for ODR/2 & ODR/4
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_BW odr, uint8_t LNLL);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_BW bw, uint8_t LNLL);
 
 /*
  * @brief Configure accelerometer digital high pass filter
  *
  * @param[in] dev Pointer to the LSM6DSL structure
- * @param[in] odr one of LSM6DSL_XL_HPF_ODR values
+ * @param[in] bw one of LSM6DSL_XL_HPF_ODR values
  *
  * @return LSM6DSL_INTF_RET_TYPE
  * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
@@ -377,7 +386,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
  *
  * @see table 9 of AN5040 for samples to discard
  */
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_BW odr);
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_BW bw);
 
 /*
  * @brief Sets Gyros ODR
@@ -460,6 +469,18 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readGyroData(LSM6DSL *dev, LSM6DSL_GyroRawData *gy
  * @see Figure 37 of AN5040 for the self procedure
  */
 LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestGyro(LSM6DSL *dev);
+
+/*
+ * @brief Configure gyroscope digital high pass filter
+ *
+ * @param[in] dev pointer to LSM6DSL structure
+ * @param[in] bw one of LSM6DSL_G_HPF_BW values
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS pass
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE fail
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configGyroHPF(LSM6DSL *dev, enum LSM6DSL_G_HPF_BW bw);
 
 /*
  * @brief Checks if temperature data is available

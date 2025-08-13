@@ -665,7 +665,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_setAccelAnalogChainBW(LSM6DSL *dev, uint8_t m)
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_BW odr, uint8_t LNLL)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_XL_LPF_BW bw, uint8_t LNLL)
 {
 	if (dev != NULL)
 	{
@@ -685,7 +685,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 				&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-		switch (odr)
+		switch (bw)
 		{
 		case LSM6DSL_XL_LPF_BW_ODR_2:
 		case LSM6DSL_XL_LPF_BW_ODR_4:
@@ -700,7 +700,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 					&ctrl1_xl, 1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 				return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-			if (odr == LSM6DSL_XL_LPF_BW_ODR_4)
+			if (bw == LSM6DSL_XL_LPF_BW_ODR_4)
 				ctrl1_xl |= LSM6DSL_LPF1_BW_SEL;
 			else
 				ctrl1_xl &= ~(LSM6DSL_LPF1_BW_SEL );
@@ -745,7 +745,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_BW odr)
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_XL_HPF_BW bw)
 {
 	if (dev != NULL)
 	{
@@ -756,7 +756,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_X
 
 		ctrl8_xl &= ~LSM6DSL_INPUT_COMPOSITE; // low latency
 
-		switch (odr)
+		switch (bw)
 		{
 		case LSM6DSL_XL_HPF_BW_ODR_4:
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0 );
@@ -786,6 +786,42 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalHPF(LSM6DSL *dev, enum LSM6DSL_X
 	}
 
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}
+
+LSM6DSL_INTF_RET_TYPE LSM6DSL_configGyroHPF(LSM6DSL *dev, enum LSM6DSL_G_HPF_BW bw)
+{
+	uint8_t ctrl7_G;
+
+	if (dev->read(dev->hInterface, dev->chipAddr, LSM6DSL_CTRL7_G, &ctrl7_G,
+			1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		return LSM6DSL_INTF_RET_TYPE_FAILURE;
+
+	ctrl7_G &= ~(LSM6DSL_HPM0_G | LSM6DSL_HPM1_G );
+
+	switch (bw)
+	{
+	case LSM6DSL_G_HPF_BW_0_016Hz:
+		break;
+
+	case LSM6DSL_G_HPF_BW_0_065Hz:
+		ctrl7_G |= LSM6DSL_HPM0_G;
+		break;
+
+	case LSM6DSL_G_HPF_BW_0_260Hz:
+		ctrl7_G |= LSM6DSL_HPM1_G;
+		break;
+
+	case LSM6DSL_G_HPF_BW_1_04Hz:
+		ctrl7_G |= LSM6DSL_HPM0_G | LSM6DSL_HPM1_G;
+		break;
+
+	default:
+		// incorrect value
+		return LSM6DSL_INTF_RET_TYPE_FAILURE;
+		break;
+	}
+
+	return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL7_G, &ctrl7_G);
 }
 
 LSM6DSL_INTF_RET_TYPE LSM6DSL_toggleDataReadyMask(LSM6DSL *dev, uint8_t m)
