@@ -713,35 +713,30 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_configAccelDigitalLPF(LSM6DSL *dev, enum LSM6DSL_X
 
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN;
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0 );
-
-			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
 		case LSM6DSL_XL_LPF_BW_ODR_100:
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL0;
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL1 );
-
-			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
 		case LSM6DSL_XL_LPF_BW_ODR_9:
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL1;
 			ctrl8_xl &= ~(LSM6DSL_HPCF_XL0 );
-
-			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
 
 		case LSM6DSL_XL_LPF_BW_ODR_400:
 			ctrl8_xl |= LSM6DSL_LPF2_XL_EN | LSM6DSL_HPCF_XL1 | LSM6DSL_HPCF_XL0;
-
-			return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 			break;
+
 		default:
 			// incorrect value
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 			break;
 		}
+		return LSM6DSL_ModifyReg(dev, LSM6DSL_CTRL8_XL, &ctrl8_xl);
 	}
+
 	return LSM6DSL_INTF_RET_TYPE_FAILURE;
 }
 
