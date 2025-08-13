@@ -96,7 +96,7 @@ void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)
 Not all the features of this library is discussed in the example, but enough to get you started.
 
 ### 1. Read acclerometer and gyroscope data
-
+#### C
 ```C
 #include "lsm6dsl.h"
 
@@ -128,9 +128,42 @@ if (LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	printf("%d,%d,%d\n", gyroRaw.x, gyroRaw.y, gyroRaw.z);
 }
 ```
+#### CPP
+```CPP
+#include "lsm6dsl.hpp"
+
+#define LSM6DSL_ADDR 0x6A
+LSM6DSL imu(static_cast<void*>(&hI2Chandle), 0x6A);
+LSM6DSL_AccelRawData xl;					// object to hold accelerometer's raw data
+LSM6DSL_GyroRawData gy;						// object to hold gyroscope's raw data
+	.
+	.
+	.
+delay(20);									// delay for 20 ms as the imu performs a 15ms boot up procedure
+imu.setAccelFSRange(LSM6DSL_XL_FS_4G);		// set the accelerometer full scale range
+imu.setAccelODR(LSM6DSL_XL_ODR_416Hz);		// set the accelerometer output data rate
+imu.setGyroFSRange(LSM6DSL_G_FS_1000DPS);	// set the gyroscope full scale range
+imu.setGyroODR(LSM6DSL_G_ODR_416Hz);		// set the gyroscope output data rate
+	.
+	.
+	.
+if (imu.isAccelDataAvailabe() == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	imu.readAccelData(&xl);
+	printf("%d,%d,%d\n", accelRaw.x, accelRaw.y, accelRaw.z);
+}
+
+if (imu.isGyroDataAvailabe() == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	imu.readGyroData(&gy);
+	printf("%d,%d,%d\n", gyroRaw.x, gyroRaw.y, gyroRaw.z);
+}
+```
+
 ### 2. Read temperature data
 To activate the temperature, either the accelerometer, gyroscope, or both must be enabled. Refer to section 9 of the application note [AN5040](/Datasheet/an5040-lsm6dsl-alwayson-3d-accelerometer-and-3d-gyroscope-stmicroelectronics.pdf) for output data rate (max 52Hz).
 
+#### C
 ```C
 #include "lsm6dsl.h"
 
@@ -155,6 +188,7 @@ if (LSM6DSL_isTempDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 ```
 ### 3. Perform self test
 The device must be kept steady during the self test procedure.
+#### C
 ```C
 #include "lsm6dsl.h"
 
