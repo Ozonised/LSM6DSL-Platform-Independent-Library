@@ -12,7 +12,7 @@ static constexpr uint16_t MIN_ST_G_250FS = 20, MIN_ST_G_2000FS = 150,
 		MAX_ST_G_250FS = 80, MAX_ST_G_2000FS = 700;
 
 // sensitivity in mg/LSB
-const float LSM6DSL_XL_FS_Sensitivity[] = { 0.061, 0.122, 0.244, 0.488 };
+const float LSM6DSL_XL_FS_Sensitivity[] = { 0.061, 0.488, 0.122, 0.244 };
 // sensitivity in mdps/LSB
 const float LSM6DSL_G_FS_Sensitivity[5] = { 8.75, 17.5, 35, 70, 4.375 };
 
@@ -564,6 +564,30 @@ float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r)
 float convertGyroRawDataToDPS(int16_t axisN, LSM6DSL_G_FS_Range r)
 {
 	return (axisN * LSM6DSL_G_FS_Sensitivity[r]) / 1000.0;
+}
+
+/*
+ * @brief Returns the accelerometer sensitivity in mg/LSB based on the selected full scale range
+ *
+ * @param[in] r accelerometer full scale range (one of LSM6DSL_G_FS_Range)
+ *
+ * @return float sensitivity in mg/LSB
+ */
+float getAccelSensitivity(LSM6DSL_XL_FS_Range r)
+{
+	return LSM6DSL_XL_FS_Sensitivity[r];
+}
+
+/*
+ * @brief Returns the gyroscope sensitivity in mdps/LSB based on the selected full scale range
+ *
+ * @param[in] r gyroscope full scale range (one of LSM6DSL_G_FS_Range)
+ *
+ * @return float sensitivity in mdps/LSB
+ */
+float getGyroSensitivity(LSM6DSL_G_FS_Range r)
+{
+	return LSM6DSL_G_FS_Sensitivity[r];
 }
 
 /*

@@ -213,5 +213,7 @@ class LSM6DSL
 
 float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r);
 float convertGyroRawDataToDPS(int16_t axisN, LSM6DSL_G_FS_Range r);
+float getAccelSensitivity(LSM6DSL_XL_FS_Range r);
+float getGyroSensitivity(LSM6DSL_G_FS_Range r);
 
 #endif /* LSM6DSL_HPP_ */
