@@ -11,7 +11,7 @@ const int16_t MIN_ST_XL = 90, MAX_ST_XL = 1700;
 const uint32_t MIN_ST_G_250FS = 20, MIN_ST_G_2000FS = 150, MAX_ST_G_250FS = 80,
 		MAX_ST_G_2000FS = 700;
 
-const float LSM6DSL_XL_FS_Sensitivity[] = { 0.61, 0.122, 0.244, 0.488 };
+const float LSM6DSL_XL_FS_Sensitivity[] = { 0.061, 0.488, 0.122, 0.244 };
 const float LSM6DSL_G_FS_Sensitivity[] = { 8.75, 17.5, 35, 70, 4.375 };
 
 static LSM6DSL_INTF_RET_TYPE LSM6DSL_ModifyReg(LSM6DSL *dev, uint8_t regAddr, uint8_t *val)
@@ -428,6 +428,16 @@ float convertAccelRawDataTomS2(int16_t axisN, enum LSM6DSL_XL_FS_Range r)
 float convertGyroRawDataToDPS(int16_t axisN, enum LSM6DSL_G_FS_Range r)
 {
 	return (axisN * LSM6DSL_G_FS_Sensitivity[r]) / 1000.0;
+}
+
+float getAccelSensitivity(enum LSM6DSL_XL_FS_Range r)
+{
+	return LSM6DSL_XL_FS_Sensitivity[r];
+}
+
+float getGyroSensitivity(enum LSM6DSL_G_FS_Range r)
+{
+	return LSM6DSL_G_FS_Sensitivity[r];
 }
 
 LSM6DSL_INTF_RET_TYPE LSM6DSL_selfTestAccel(LSM6DSL *dev)

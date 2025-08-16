@@ -524,6 +524,23 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL_readTemperature(LSM6DSL *dev, LSM6DSL_TempData *t)
 float convertAccelRawDataTomS2(int16_t axisN, enum LSM6DSL_XL_FS_Range r);
 
 /*
+ * @brief Returns the accelerometer sensitivity in mg/LSB based on the selected full scale range
+ *
+ * @param[in] r accelerometer full scale range (one of LSM6DSL_G_FS_Range)
+ *
+ * @return float sensitivity in mg/LSB
+ */
+float getAccelSensitivity(enum LSM6DSL_XL_FS_Range r);
+
+/*
+ * @brief Returns the gyroscope sensitivity in mdps/LSB based on the selected full scale range
+ *
+ * @param[in] r gyroscope full scale range (one of LSM6DSL_G_FS_Range)
+ *
+ * @return float sensitivity in mdps/LSB
+ */
+float getGyroSensitivity(enum LSM6DSL_G_FS_Range r);
+/*
  * @brief Converts gyroscope raw data into degrees per second (dps)
  *
  * This function converts a raw gyroscope reading from a given axis
