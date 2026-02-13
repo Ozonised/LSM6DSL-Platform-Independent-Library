@@ -546,7 +546,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readGyroData(LSM6DSL_GyroRawData *gy)
  */
 float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r)
 {
-	return ((axisN * LSM6DSL_XL_FS_Sensitivity[r]) * 9.8) / 1000.0;
+	return ((axisN * LSM6DSL_XL_FS_Sensitivity[r]) * 9.81f) / 1000.0f;
 }
 
 /*
@@ -563,7 +563,7 @@ float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r)
  */
 float convertGyroRawDataToDPS(int16_t axisN, LSM6DSL_G_FS_Range r)
 {
-	return (axisN * LSM6DSL_G_FS_Sensitivity[r]) / 1000.0;
+	return (axisN * LSM6DSL_G_FS_Sensitivity[r]) / 1000.0f;
 }
 
 /*
