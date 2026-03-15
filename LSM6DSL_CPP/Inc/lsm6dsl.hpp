@@ -143,22 +143,29 @@ struct LSM6DSL_TempData
 		int16_t regData;
 };
 
+using LSM6DSL_ReadFuncPtr = LSM6DSL_INTF_RET_TYPE (*) (void *hInterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
+using LSM6DSL_WriteFuncPtr = LSM6DSL_INTF_RET_TYPE (*) (void *hInterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len);
+using LSM6DSL_DelayMsFuncPtr = void (*) (uint32_t ms);
+
 class LSM6DSL
 {
 	private:
 		void *hInterface;			// Reference to interface handle for I2C
 		uint8_t chipAddr;			// IMU address
 
-		LSM6DSL_INTF_RET_TYPE read(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len); // Bus read function
-		LSM6DSL_INTF_RET_TYPE write(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len); // Bus write function
-		void delayMs(uint32_t ms); // delay in millisecond function
+		LSM6DSL_ReadFuncPtr read; // Bus read function
+		LSM6DSL_WriteFuncPtr write; // Bus write function
+		LSM6DSL_DelayMsFuncPtr delayMs; // delay in millisecond function
+
 		LSM6DSL_INTF_RET_TYPE ModifyReg(uint8_t regAddr, uint8_t *val);
 
 	public:
-		LSM6DSL(void *intrf, uint8_t chipAddr) :
-				hInterface(intrf), chipAddr(chipAddr)
+		LSM6DSL(void *intrf, LSM6DSL_ReadFuncPtr read, LSM6DSL_WriteFuncPtr write, LSM6DSL_DelayMsFuncPtr delay) :
+				hInterface(intrf), read(read), write(write), delayMs(delay)
 		{
 		}
+
+		void setI2CAddress(bool SDOPinState);
 
 		LSM6DSL_INTF_RET_TYPE isPresent();
 

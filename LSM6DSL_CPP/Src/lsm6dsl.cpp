@@ -21,10 +21,10 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::ModifyReg(uint8_t regAddr, uint8_t *val)
 	if (val != NULL)
 	{
 		uint8_t reg;
-		if (write(chipAddr, regAddr, val, 1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+		if (write(hInterface, chipAddr, regAddr, val, 1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			// verify the written value
-			if ((read(chipAddr, regAddr, &reg, 1)
+			if ((read(hInterface, chipAddr, regAddr, &reg, 1)
 					== LSM6DSL_INTF_RET_TYPE_SUCCESS) && (reg == *val))
 				return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 		}
@@ -43,7 +43,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::ModifyReg(uint8_t regAddr, uint8_t *val)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::isPresent()
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::WHO_AM_I, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::WHO_AM_I, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (t == LSM6DSL_REG::WHO_AM_I_VAL)
@@ -66,7 +66,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::isPresent()
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setBigLittleEndian(LSM6DSL_ENDIAN end)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL3_C, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL3_C, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		switch (end)
@@ -102,7 +102,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setBigLittleEndian(LSM6DSL_ENDIAN end)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setAllIRQonINT1(uint8_t en)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL4_C, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL4_C, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (en)
@@ -130,7 +130,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAllIRQonINT1(uint8_t en)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelODR(LSM6DSL_XL_ODR m)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		t &= 0x0F;	// clear the ODR_XLn bits
@@ -174,7 +174,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelODR(LSM6DSL_XL_ODR m)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::isAccelDataAvailabe()
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::STATUS_REG, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::STATUS_REG, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (t & LSM6DSL_REG::XLDA)
@@ -198,7 +198,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::isAccelDataAvailabe()
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroODR(LSM6DSL_G_ODR m)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL2_G, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL2_G, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		t &= 0x0E;	// clear the ODR_Gn bits
@@ -243,7 +243,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroODR(LSM6DSL_G_ODR m)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelFSRange(LSM6DSL_XL_FS_Range r)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		t &= 0xF3;	// clear the FS_XLn bits
@@ -280,7 +280,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelFSRange(LSM6DSL_XL_FS_Range r)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroFSRange(LSM6DSL_G_FS_Range r)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL2_G, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL2_G, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		t &= 0xF0;	// clear the FS_Gn and FS_G125 bits
@@ -323,7 +323,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroFSRange(LSM6DSL_G_FS_Range r)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelHighPerfMode(LSM6DSL_XL_G_HM_MODE m)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL6_C, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL6_C, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (LSM6DSL_XL_G_HM_MODE_ON)
@@ -351,7 +351,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelHighPerfMode(LSM6DSL_XL_G_HM_MODE m)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroHighPerfMode(LSM6DSL_XL_G_HM_MODE m)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL7_G, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL7_G, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (LSM6DSL_XL_G_HM_MODE_ON)
@@ -376,7 +376,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setGyroHighPerfMode(LSM6DSL_XL_G_HM_MODE m)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::isGyroDataAvailabe()
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::STATUS_REG, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::STATUS_REG, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (t & LSM6DSL_REG::GDA)
@@ -400,7 +400,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::isGyroDataAvailabe()
 LSM6DSL_INTF_RET_TYPE LSM6DSL::isTempDataAvailabe()
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::STATUS_REG, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::STATUS_REG, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (t & LSM6DSL_REG::TDA)
@@ -464,7 +464,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::INT2SourceConfig(LSM6DSL_INT2_Sources s)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::toggleBlockDataUpdate(uint8_t m)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL3_C, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL3_C, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (m)
@@ -492,7 +492,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readAccelData(LSM6DSL_AccelRawData *xl)
 	if (xl != NULL)
 	{
 		uint8_t buf[6];
-		if (read(chipAddr, LSM6DSL_REG::OUTX_L_XL, buf,
+		if (read(hInterface, chipAddr, LSM6DSL_REG::OUTX_L_XL, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			xl->x = (buf[1] << 8) | buf[0];
@@ -519,7 +519,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readGyroData(LSM6DSL_GyroRawData *gy)
 	if (gy != NULL)
 	{
 		uint8_t buf[6];
-		if (read(chipAddr, LSM6DSL_REG::OUTX_L_G, buf,
+		if (read(hInterface, chipAddr, LSM6DSL_REG::OUTX_L_G, buf,
 				6) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			gy->x = (buf[1] << 8) | buf[0];
@@ -613,7 +613,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestAccel()
 	uint8_t ptr[10] = { 0x38, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00 };
 
-	if (write(chipAddr, LSM6DSL_REG::CTRL1_XL, ptr,
+	if (write(hInterface, chipAddr, LSM6DSL_REG::CTRL1_XL, ptr,
 			10) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -724,7 +724,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::selfTestGyro()
 	uint8_t ptr[10] = { 0x00, 0x50, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00 };
 
-	if (write(chipAddr, LSM6DSL_REG::CTRL1_XL, ptr,
+	if (write(hInterface, chipAddr, LSM6DSL_REG::CTRL1_XL, ptr,
 			10) == LSM6DSL_INTF_RET_TYPE_FAILURE)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -829,7 +829,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readTemperature(LSM6DSL_TempData *t)
 	if (t != NULL)
 	{
 		uint8_t buf[2];
-		if (read(chipAddr, LSM6DSL_REG::OUT_TEMP_L, buf,
+		if (read(hInterface, chipAddr, LSM6DSL_REG::OUT_TEMP_L, buf,
 				2) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		{
 			t->regData = buf[1] << 8 | buf[0];
@@ -853,7 +853,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::readTemperature(LSM6DSL_TempData *t)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelAnalogChainBW(uint8_t m)
 {
 	uint8_t t;
-	if (read(chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL1_XL, &t,
 			1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 	{
 		if (m)
@@ -882,7 +882,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::setAccelAnalogChainBW(uint8_t m)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8_t LNLL)
 {
 	uint8_t ctrl8_xl, ctrl1_xl;
-	if (read(chipAddr, LSM6DSL_REG::CTRL8_XL, &ctrl8_xl,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL8_XL, &ctrl8_xl,
 			1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -908,7 +908,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8
 				&ctrl8_xl) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
-		if (read(chipAddr, LSM6DSL_REG::CTRL1_XL, &ctrl1_xl,
+		if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL1_XL, &ctrl1_xl,
 				1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 			return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -963,7 +963,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalLPF(LSM6DSL_XL_LPF_BW bw, uint8
 LSM6DSL_INTF_RET_TYPE LSM6DSL::configAccelDigitalHPF(LSM6DSL_XL_HPF_BW bw)
 {
 	uint8_t ctrl8_xl;
-	if (read(chipAddr, LSM6DSL_REG::CTRL8_XL, &ctrl8_xl,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL8_XL, &ctrl8_xl,
 			1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -1011,7 +1011,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configGyroHPF(LSM6DSL_G_HPF_BW bw)
 {
 	uint8_t ctrl7_G;
 
-	if (read(chipAddr, LSM6DSL_REG::CTRL7_G, &ctrl7_G,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL7_G, &ctrl7_G,
 			1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -1057,7 +1057,7 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::configGyroHPF(LSM6DSL_G_HPF_BW bw)
 LSM6DSL_INTF_RET_TYPE LSM6DSL::toggleDataReadyMask(uint8_t m)
 {
 	uint8_t ctrl4_c;
-	if (read(chipAddr, LSM6DSL_REG::CTRL4_C, &ctrl4_c,
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL4_C, &ctrl4_c,
 			1) != LSM6DSL_INTF_RET_TYPE_SUCCESS)
 		return LSM6DSL_INTF_RET_TYPE_FAILURE;
 
@@ -1067,6 +1067,23 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::toggleDataReadyMask(uint8_t m)
 		ctrl4_c &= ~LSM6DSL_REG::DRDY_MASK;
 
 	return ModifyReg(LSM6DSL_REG::CTRL4_C, &ctrl4_c);
+}
 
-	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+/**
+ * @brief Set the I2C address of the LSM6DSL based on the SDO pin state.
+ *
+ * The LSM6DSL supports two possible I2C addresses depending on the logic
+ * level applied to the SDO/SA0 pin. This function configures the internal
+ * `chipAddr` member of the LSM6DSL class accordingly.
+ *
+ * This function should be called during initialization before any I2C
+ * communication with the sensor occurs.
+ *
+ * @param SDOPinState Logic level of the SDO pin.
+ *                 	- `false` → SDO LOW  → I2C address = 0x6A
+ *                 	- `true`  → SDO HIGH → I2C address = 0x6B
+ */
+void LSM6DSL::setI2CAddress(bool SDOPinState)
+{
+	chipAddr = SDOPinState ? 0x6B : 0x6A;
 }
