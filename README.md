@@ -15,30 +15,33 @@ The device has a dynamic user-selectable full-scale acceleration range of ±2/±
 - Setting block updata mode.
 
 ### Note:
-Refer to [lsm6dsl.h](LSM6DSL_C/Inc/lsm6dsl.h) for all the implemented features.
+Refer to [lsm6dsl.h](LSM6DSL_C/Inc/lsm6dsl.h) or [lsm6dsl.hpp](LSM6DSL_CPP/Inc/lsm6dsl.hpp) for all the implemented features.
 
+---
 ## Do I use it with my favourite microcontroller?
-To use it with your favourite microcontroller, you simply need to define the 3 functions declared in [lsm6dsl_port.h](LSM6DSL_C/Inc/lsm6dsl_port.h) (for C) or [lsm6dsl_port.hpp](LSM6DSL_CPP/Inc/lsm6dsl_reg.hpp) (for C++).
+To use it with your favourite microcontroller, you simply need to define the 3 functions declared in [lsm6dsl_port.h](LSM6DSL_C/Inc/lsm6dsl_port.h) (for C) or create read, write and delay functions based on the function pointer syntax in [lsm6dsl.hpp](LSM6DSL_CPP/Inc/lsm6dsl.hpp) (for C++).
 
 The functions for C are:
 1. ```LSM6DSL_INTF_RET_TYPE LSM6DSL_PortI2CReadReg(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to read the device registers.
 2. ```LSM6DSL_INTF_RET_TYPE LSM6DSL_PortI2CWriteReg(void *hinterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to write to device registers.
 3. ```void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)``` : function to delay in milliseconds.
 
-The functions for C++ are:
-1. ```LSM6DSL_INTF_RET_TYPE LSM6DSL::read(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to read the device registers.
-2. ```LSM6DSL_INTF_RET_TYPE LSM6DSL::write(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to write to device registers.
-3. ```void LSM6DSL::delayMs(uint32_t ms)``` : function to delay in milliseconds.
+The function syntax for C++ are:
+1. ```LSM6DSL_INTF_RET_TYPE FunctionToRead(void *hInterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to read the device registers.
+2. ```LSM6DSL_INTF_RET_TYPE FunctionToWrite (void *hInterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len)``` : function to write to device registers.
+3. ```void delay(uint32_t ms)``` : function to delay in milliseconds.
 
 Don't worry, I will show you an example.
 
 ### Porting to Arduino Framework:
-To use the library with the arduino framwork, inlude the cpp files from [LSM6DSL_CPP](/LSM6DSL_CPP) into your project.
-Now, from the [lsm6dsl_port.hpp](LSM6DSL_CPP/Inc/lsm6dsl_reg.hpp) copy these function into your main file and write their definition as shown below:
+To use the library with the arduino framwork, inlude the ```.hpp``` and ```.cpp``` files from [LSM6DSL_CPP](/LSM6DSL_CPP) into your project.
+Now, create read, write and delay functions as shown below:
 
+### Note:
+I am using I2C interface.
 ```CPP
-LSM6DSL_INTF_RET_TYPE LSM6DSL::read(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len) {
-  TwoWire *i2c = (TwoWire *)hInterface;
+LSM6DSL_INTF_RET_TYPE LSM6DSL_I2C_Read(void *hInterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len) {
+  TwoWire *i2c = static_cast<TwoWire*>(hInterface);
   uint8_t i = 0;
   i2c->beginTransmission(chipAddr);
   i2c->write(RegAddr);
@@ -53,8 +56,8 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::read(uint8_t chipAddr, uint8_t RegAddr, uint8_t *
   return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 }
 
-LSM6DSL_INTF_RET_TYPE LSM6DSL::write(uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len) {
-  TwoWire *i2c = (TwoWire *)hInterface;
+LSM6DSL_INTF_RET_TYPE LSM6DSL_I2C_Write(void *hInterface, uint8_t chipAddr, uint8_t RegAddr, uint8_t *buf, uint16_t len) {
+  TwoWire *i2c = static_cast<TwoWire*>(hInterface);
   uint8_t i = 0;
   i2c->beginTransmission(chipAddr);
   i2c->write(RegAddr);
@@ -65,9 +68,6 @@ LSM6DSL_INTF_RET_TYPE LSM6DSL::write(uint8_t chipAddr, uint8_t RegAddr, uint8_t 
   return LSM6DSL_INTF_RET_TYPE_SUCCESS;
 }
 
-void LSM6DSL::delayMs(uint32_t ms) {
-  delay(ms);
-}
 ```
 ### Porting to STM32 using ST HAL framework:
 To use use the library with ST HAL's framework, include the files from [LSM6DSL_C](/LSM6DSL_C) into your project
@@ -92,10 +92,11 @@ void LSM6DSL_PortDelayMs(void *hinterface, uint32_t ms)
 	HAL_Delay(ms);
 }
 ```
+---
 ## Examples:
 Not all the features of this library is discussed in the example, but enough to get you started.
 
-### 1. Read acclerometer and gyroscope data
+### 1. Read accelerometer and gyroscope data
 #### C
 ```C
 #include "lsm6dsl.h"
@@ -132,13 +133,13 @@ if (LSM6DSL_isGyroDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 ```CPP
 #include "lsm6dsl.hpp"
 
-#define LSM6DSL_ADDR 0x6A
-LSM6DSL imu(static_cast<void*>(&hI2Chandle), 0x6A);
+LSM6DSL imu(static_cast<void*>(&hI2Chandle), LSM6DSL_I2C_Read, LSM6DSL_I2C_Write, delay);
 LSM6DSL_AccelRawData xl;					// object to hold accelerometer's raw data
 LSM6DSL_GyroRawData gy;						// object to hold gyroscope's raw data
 	.
 	.
 	.
+imu.setI2CAddress(0);
 delay(20);									// delay for 20 ms as the imu performs a 15ms boot up procedure
 imu.setAccelFSRange(LSM6DSL_XL_FS_4G);		// set the accelerometer full scale range
 imu.setAccelODR(LSM6DSL_XL_ODR_416Hz);		// set the accelerometer output data rate
@@ -205,13 +206,15 @@ if (LSM6DSL_isTempDataAvailabe(&imu) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
 #### CPP
 ```CPP
 #include "lsm6dsl.hpp"
-
-#define LSM6DSL_ADDR 0x6A
-LSM6DSL imu(static_cast<void*>(&hI2Chandle), 0x6A);
+	.
+	.
+	.
+LSM6DSL imu(static_cast<void*>(&hI2Chandle), LSM6DSL_I2C_Read, LSM6DSL_I2C_Write, delay);
 LSM6DSL_TempData t;	// object to hold temperature data
 	.
 	.
 	.
+imu.setI2CAddress(0);
 delay(20);									// delay for 20 ms as the imu performs a 15ms boot up procedure
 imu.setAccelFSRange(LSM6DSL_XL_FS_4G);		// set the accelerometer full scale range
 imu.setAccelODR(LSM6DSL_XL_ODR_416Hz);		// set the accelerometer output data rate
@@ -268,14 +271,16 @@ if (gyStState == LSM6DSL_INTF_RET_TYPE_SUCCESS && LSM6DSL_isGyroDataAvailabe(&im
 #### CPP
 ```CPP
 #include "lsm6dsl.hpp"
-
-#define LSM6DSL_ADDR 0x6A
-LSM6DSL imu(static_cast<void*>(&hI2Chandle), 0x6A);
+	.
+	.
+	.
+LSM6DSL imu(static_cast<void*>(&hI2Chandle), LSM6DSL_I2C_Read, LSM6DSL_I2C_Write, delay);
 LSM6DSL_AccelRawData xl;					// object to hold accelerometer's raw data
 LSM6DSL_GyroRawData gy;						// object to hold gyroscope's raw data
 	.
 	.
 	.
+imu.setI2CAddress(0);
 delay(20);									// delay for 20 ms as the imu performs a 15ms boot up procedure
 uint8_t xlStState, gyStState;
 xlStState = imu.selfTestAccel();
