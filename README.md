@@ -394,3 +394,47 @@ void imuInterruptHandler(void)
 #### Note:
 LSM6DSL has 2 interrupts pin INT1 and INT2, whose interrupt souce can be configured through ```LSM6DSL_INTF_RET_TYPE INT1SourceConfig(LSM6DSL_INT1_Sources s)``` and ```LSM6DSL_INTF_RET_TYPE INT2SourceConfig(LSM6DSL_INT2_Sources s)``` respectively.
 By default, some interrupt sources are exclusive to INT2 pin. These sources can be mappeded to INT1 pin through ```LSM6DSL_INTF_RET_TYPE setAllIRQonINT1(uint8_t en)```.
+
+### 5. Using builtin low and high pass digital filters
+The LSM6DSL imu offers builtin in digital high pass and low pass filter for the accelerometer and high pass filter for the gyroscope.
+In this example, we will be utilising the accelerometer's low pass filter to reduce noise due to vibrations, and gyroscope's high pass filter to reduce gyro drift to an extent.
+
+CPP
+```CPP
+#include "lsm6dsl.hpp"
+
+LSM6DSL imu(static_cast<void*>(&hI2Chandle), LSM6DSL_I2C_Read, LSM6DSL_I2C_Write, delay);
+LSM6DSL_AccelRawData xl;					// object to hold accelerometer's raw data
+LSM6DSL_GyroRawData gy;						// object to hold gyroscope's raw data
+	.
+volatile bool imuDataReady = false;
+	.
+	.
+	.
+imu.setI2CAddress(0);
+delay(20);									// delay for 20 ms as the imu performs a 15ms boot up procedure
+imu.setAccelFSRange(LSM6DSL_XL_FS_4G);		// set the accelerometer full scale range
+imu.setGyroFSRange(LSM6DSL_G_FS_1000DPS);	// set the gyroscope full scale range
+imu.configGyroHPF(LSM6DSL_G_HPF_BW_0_260Hz); // gyroscope high pass fitler cut off set to 0.26HZ
+imu.configAccelDigitalLPF(LSM6DSL_XL_LPF_BW_ODR_9, 1); // accelerometer low pass filter bandwidth set to: aODR / 9 (here accelerometer ODR = 416) -> 416Hz/9 = 46Hz (approx).
+imu.INT1SourceConfig(static_cast<LSM6DSL_INT1_Sources>(LSM6DSL_INT1_DRDY_XL | LSM6DSL_INT1_DRDY_G)); // accelerometer and gyroscope data ready interrupt on INT1 pin
+imu.setGyroODR(LSM6DSL_G_ODR_416Hz);		// set the gyroscope output data rate
+imu.setAccelODR(LSM6DSL_XL_ODR_416Hz);		// set the accelerometer output data rate
+	.
+	.
+	.
+if (imuDataReady == true && imu.isAccelDataAvailabe() == LSM6DSL_INTF_RET_TYPE_SUCCESS && imu.isGyroDataAvailabe() == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+{
+	imu.readAccelData(&xl);
+	printf("%d,%d,%d\n", accelRaw.x, accelRaw.y, accelRaw.z);
+	imu.readGyroData(&gy);
+	printf("%d,%d,%d\n", gyroRaw.x, gyroRaw.y, gyroRaw.z);
+	imuDataReady = false;
+}
+	.
+	.
+	.
+void imuInterruptHandler(void)
+{
+	imuDataReady = true;
+}
