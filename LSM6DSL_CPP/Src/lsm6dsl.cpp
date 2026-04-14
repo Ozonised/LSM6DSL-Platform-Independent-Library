@@ -1087,3 +1087,35 @@ void LSM6DSL::setI2CAddress(bool SDOPinState)
 {
 	chipAddr = SDOPinState ? 0x6B : 0x6A;
 }
+
+/*
+ * @brief Performs software reset
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS setting successful
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL::softwareReset(void)
+{
+	uint8_t ctrl3_c;
+	ctrl3_c = 0x01;
+	return ModifyReg(LSM6DSL_REG::CTRL3_C, &ctrl3_c);
+}
+
+/*
+ * @brief Checks the software reset status
+ *
+ * @return LSM6DSL_INTF_RET_TYPE
+ * 		   - LSM6DSL_INTF_RET_TYPE_SUCCESS software reset complete
+ * 		   - LSM6DSL_INTF_RET_TYPE_FAILURE software reset ongoing or write error
+ */
+LSM6DSL_INTF_RET_TYPE LSM6DSL::isSoftwareResetComplete(void)
+{
+	uint8_t ctrl3_c;
+	if (read(hInterface, chipAddr, LSM6DSL_REG::CTRL3_C, &ctrl3_c, 1) == LSM6DSL_INTF_RET_TYPE_SUCCESS)
+	{
+		// SW_RESET bit = 0 (normal mode), SW_RESET bit = 1 (software reset)
+		return (ctrl3_c & 0x01) ? LSM6DSL_INTF_RET_TYPE_FAILURE : LSM6DSL_INTF_RET_TYPE_SUCCESS;
+	}
+	return LSM6DSL_INTF_RET_TYPE_FAILURE;
+}

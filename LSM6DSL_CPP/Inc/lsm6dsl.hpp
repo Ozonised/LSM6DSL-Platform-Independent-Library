@@ -216,6 +216,10 @@ class LSM6DSL
 		LSM6DSL_INTF_RET_TYPE isTempDataAvailabe();
 
 		LSM6DSL_INTF_RET_TYPE readTemperature(LSM6DSL_TempData *t);
+
+		LSM6DSL_INTF_RET_TYPE softwareReset(void);
+
+		LSM6DSL_INTF_RET_TYPE isSoftwareResetComplete(void);
 };
 
 float convertAccelRawDataTomS2(int16_t axisN, LSM6DSL_XL_FS_Range r);
